@@ -62,7 +62,7 @@ START → router → sensitivity_gate → reasoning ──→ tools → cache_ch
 | Geocoding | Nominatim via geopy (OpenStreetMap) with local city cache | Free |
 | Embeddings | sentence-transformers `all-MiniLM-L6-v2`, runs locally | Free |
 | Vector DB | ChromaDB, runs locally | Free |
-| Session store | SQLite (ships with Python) | Free |
+| Database & Auth | Neon DB (Serverless PostgreSQL) | Free tier |
 | HITL checkpointer | LangGraph MemorySaver (in-process) | Free |
 
 ---
@@ -79,6 +79,8 @@ frontend/
   chat.jsx        — chat panel, message bubbles, tool activity chip, HITL dialog
   agent.jsx       — SSE transport, runResume() for HITL, offline mock fallback
   app.jsx         — root layout, session wiring, HITL confirmation handler
+  auth.jsx        — login & signup components communicating with FastAPI
+  home.jsx        — landing page with feature descriptions
 
 backend/
   agent/
@@ -94,8 +96,11 @@ backend/
       knowledge.py    — knowledge_lookup() via ChromaDB + sentence-transformers
   api/
     main.py       — FastAPI: /chat (SSE), /resume (HITL), /session/{id}, static frontend
+    auth.py       — JWT-based signup, login, and user profile endpoints
   db/
     sessions.py   — SQLite store (conversation history + cached chart + birth details)
+    neon.py       — Neon DB (PostgreSQL) SQLAlchemy connection setup
+    models.py     — SQLAlchemy models (e.g., User table)
   data/
     astrology_notes/  — 7 markdown files indexed into ChromaDB for RAG
   requirements.txt
@@ -139,6 +144,13 @@ uvicorn api.main:app --reload
 ```
 
 API at `http://localhost:8000`. Hit `/health` to confirm it's running.
+
+---
+
+## Recent Updates
+
+- **Neon DB Migration**: Authentication and user credential storage were migrated to a secure, custom FastAPI backend connected to Neon DB (PostgreSQL) with `bcrypt` password hashing and JWT sessions.
+- **Mobile Optimizations**: The UI has been heavily optimized for narrow screens (iPhone SE-sized). Includes fluid grids to prevent horizontal scrolling, enlarged touch targets (44px min), reduced paddings for wider chat bubbles, and a higher slide-up drawer for better virtual keyboard clearance.
 
 ---
 
