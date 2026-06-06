@@ -1,6 +1,6 @@
-# AstroAgent
+# Bhagyakram
 
-A conversational astrology companion built for Aradhana. You share your birth details, it computes your actual natal chart using real planetary data, and then you can ask it anything — your career, relationships, what the energy looks like today, your Saturn return. It reasons in steps, calls tools to get real data, and responds with warmth.
+A conversational astrology companion. You share your birth details, it computes your actual natal chart using real planetary data, and then you can ask it anything — your career, relationships, what the energy looks like today, your Saturn return. It reasons in steps, calls tools to get real data, and responds with warmth.
 
 Everything runs on free tools. The only key you need is a free Google AI Studio (Gemini) API key — no credit card.
 
@@ -49,7 +49,7 @@ START → router → sensitivity_gate → reasoning ──→ tools → cache_ch
 
 **Human-in-the-loop** — the `sensitivity_gate` node uses LangGraph's `interrupt()` to pause graph execution before processing questions about death timing ("when will I die", "predict my death", etc.). When triggered, the frontend receives a `confirmation_needed` SSE event and shows a dialog asking the user if they'd like the reading framed around transformation and cycles rather than literal predictions. On confirmation, the frontend calls the new `/resume` endpoint, which uses `Command(resume=...)` to continue the graph from the saved `MemorySaver` checkpoint. On decline, a warm redirect is returned instead.
 
-**Prompt injection handling** — when the underlying model fires its own safety layer and returns a flat refusal ("I'm sorry, but I can't provide that."), the safety node detects it (length < 120 chars, refusal phrase present) and replaces it with an in-character Aradhana response that acknowledges the framing and offers a real reading instead.
+**Prompt injection handling** — when the underlying model fires its own safety layer and returns a flat refusal ("I'm sorry, but I can't provide that."), the safety node detects it (length < 120 chars, refusal phrase present) and replaces it with an in-character Bhagyakram response that acknowledges the framing and offers a real reading instead.
 
 ---
 
