@@ -97,9 +97,6 @@ function BirthDetailsForm({ values, onChange, onSubmit, submitting, isDrawer, on
   const set = (k) => (e) => onChange({ ...values, [k]: e.target.value });
 
   // ── validation ──
-  // "Now" in IST (Asia/Kolkata, UTC+5:30), independent of the visitor's own clock —
-  // a birth date/time can't be later than the present moment in India. Shifting the
-  // epoch by +5.5h and reading the UTC fields gives IST wall-clock without a tz lib.
   const istNow = new Date(Date.now() + 5.5 * 3600 * 1000);
   const pad = (n) => String(n).padStart(2, "0");
   const todayIST = `${istNow.getUTCFullYear()}-${pad(istNow.getUTCMonth() + 1)}-${pad(istNow.getUTCDate())}`;
@@ -108,12 +105,10 @@ function BirthDetailsForm({ values, onChange, onSubmit, submitting, isDrawer, on
   const place = (values.place || "").trim();
   const dateMissing = !values.date;
   const dateFuture = values.date && values.date > todayIST;
-  // A time only counts as "future" when the date is today — yesterday at 23:59 is fine.
   const timeFuture = values.time && values.date === todayIST && values.time > nowTimeIST;
   const placeMissing = !place;
-  const placeVague = place && !place.includes(",");      // no country given
+  const placeVague = place && !place.includes(",");
   const timeMissing = !values.time && !values.approxTime;
-  // Need a valid (non-future) date + place; a future time also blocks.
   const blocking = dateMissing || placeMissing || dateFuture || timeFuture;
 
   const handleSubmit = () => {
@@ -159,10 +154,10 @@ function BirthDetailsForm({ values, onChange, onSubmit, submitting, isDrawer, on
         {/* header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: isDrawer ? 22 : 30 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-            <LotusMark size={26} glow />
-            <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 23, color: "var(--gold)", letterSpacing: "0.04em" }}>Aradhana</span>
+            <LogoMark size={30} glow />
+            <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 23, color: "var(--gold)", letterSpacing: "0.04em" }}>Bhagyakram</span>
           </div>
-          {isDrawer && (
+          {onCloseDrawer && (
             <button onClick={onCloseDrawer} aria-label="Close" style={{
               background: "none", border: "none", color: "var(--ivory-dim)", cursor: "pointer", fontSize: 22, lineHeight: 1, padding: 4,
             }}>×</button>

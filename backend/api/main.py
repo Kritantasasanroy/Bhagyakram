@@ -16,6 +16,11 @@ from agent.chart_precompute import precompute_chart
 from agent.graph import graph
 from agent.state import AgentState, BirthDetails
 from db.sessions import get_session_meta, init_db, load_session, save_session
+from db.neon import engine, Base
+import db.models
+from api.auth import router as auth_router
+
+Base.metadata.create_all(bind=engine)
 
 try:
     from langgraph.types import Command
@@ -26,14 +31,17 @@ except ImportError:
     GraphInterrupt = None
     _HITL_AVAILABLE = False
 
-app = FastAPI(title="AstroAgent API", version="0.2.0")
+app = FastAPI(title="Bhagyakram AI API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
 
 
 @app.on_event("startup")
@@ -62,7 +70,7 @@ class ResumeRequest(BaseModel):
 
 
 _EMPTY_GREETING = (
-    "Hello, I'm Aradhana — your astrology companion. Whenever you're ready, share "
+    "Hello, I'm Bhagyakram AI — your astrology companion. Whenever you're ready, share "
     "your birth date, time, and place, and ask me anything: your chart, the energy "
     "of today, your rising sign. What would you like to explore?"
 )

@@ -1,4 +1,4 @@
-/* global React, ReactDOM, CosmicBackground, AradhanaLogo, BirthDetailsForm, ChatPanel, ConfirmationDialog, runAgent, runResume */
+/* global React, ReactDOM, CosmicBackground, BhagyakramLogo, LogoMark, BirthDetailsForm, ChatPanel, ConfirmationDialog, runAgent, runResume, HomePage, AuthPage */
 const { useState: useS, useRef: useR, useEffect: useE } = React;
 
 let _id = 0;
@@ -36,7 +36,8 @@ function ErrorToast({ message, onClose }) {
   );
 }
 
-function App() {
+// ---- Chat App (the main astrology interface) ----
+function ChatApp({ userEmail, onSignOut }) {
   const isMobile = useMedia("(max-width: 860px)");
 
   const [birth, setBirth] = useS({ date: "", time: "", approxTime: false, place: "" });
@@ -45,10 +46,11 @@ function App() {
   const [streamingId, setStreamingId] = useS(null);
   const [error, setError] = useS(null);
   const [drawerOpen, setDrawerOpen] = useS(false);
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useS(true);
   const [pendingConfirmation, setPendingConfirmation] = useS(null);
 
   const sessionId = useR((() => {
-    const KEY = "aradhana_session_id";
+    const KEY = "bhagyakram_session_id";
     let id = sessionStorage.getItem(KEY);
     if (!id) { id = "sess_" + Math.random().toString(36).slice(2, 10); sessionStorage.setItem(KEY, id); }
     return id;
@@ -64,10 +66,6 @@ function App() {
     const userMsg = { id: nextId(), role: "user", text };
     const botId = nextId();
     setMessages((prev) => [...prev, userMsg, { id: botId, role: "assistant", text: "" }]);
-
-    // Show the celestial loading indicator immediately — the chart is now computed
-    // in Python so there may be no tool events, but the model still needs a beat to
-    // think. This keeps the rolling messages visible during that wait.
     setTool({ label: "consulting the stars", leaving: false });
 
     const firstTurn = !hasRead.current;
@@ -75,9 +73,9 @@ function App() {
       { message: text, session_id: sessionId, birth_details: { date: birth.date, time: birth.time, place: birth.place }, firstTurn },
       {
         onToolStart: (label) => setTool({ label, leaving: false }),
-        onToolEnd: () => {},  // keep the indicator up until real text starts streaming
+        onToolEnd: () => {},
         onToken: (tk) => {
-          setTool(null);  // first token arrived — dismiss the loading indicator
+          setTool(null);
           setStreamingId(botId);
           setMessages((prev) => prev.map((m) => m.id === botId ? { ...m, text: m.text + tk } : m));
         },
@@ -90,7 +88,6 @@ function App() {
           setError(msg);
           setStreamingId(null);
           setTool(null);
-          // drop the empty assistant placeholder
           setMessages((prev) => prev.filter((m) => !(m.id === botId && m.text === "")));
         },
         onConfirmationNeeded: (evt) => {
@@ -154,19 +151,19 @@ function App() {
         />
       )}
 
-      {/* Left panel (desktop) — in-flow flex item */}
-      {!isMobile && (
+      {/* Left panel (desktop) */}
+      {!isMobile && desktopSidebarOpen && (
         <aside style={{
           position: "relative", zIndex: 2, height: "100%",
           flex: "0 0 clamp(320px, 30%, 420px)",
           background: "rgba(15,21,37,0.82)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
           borderRight: "1px solid var(--hairline)",
         }}>
-          <BirthDetailsForm {...formProps} />
+          <BirthDetailsForm {...formProps} onCloseDrawer={() => setDesktopSidebarOpen(false)} />
         </aside>
       )}
 
-      {/* Right panel — chat — in-flow flex item */}
+      {/* Right panel — chat */}
       <main style={{
         position: "relative", zIndex: 2, height: "100%",
         flex: "1 1 0%", minWidth: 0,
@@ -177,8 +174,10 @@ function App() {
           streamingId={streamingId}
           onSend={send}
           onPrompt={send}
-          onEditDetails={() => setDrawerOpen(true)}
-          showEditChip={isMobile}
+          onEditDetails={() => isMobile ? setDrawerOpen(true) : setDesktopSidebarOpen(true)}
+          showEditChip={isMobile || (!isMobile && !desktopSidebarOpen)}
+          userEmail={userEmail}
+          onSignOut={onSignOut}
         />
       </main>
 
@@ -195,7 +194,7 @@ function App() {
           />
           <div style={{
             position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 50,
-            height: "86%", maxHeight: 640,
+            height: "92%", maxHeight: 720,
             background: "var(--panel)", borderTop: "1px solid var(--hairline-2)",
             borderRadius: "22px 22px 0 0",
             transform: drawerOpen ? "translateY(0)" : "translateY(100%)",
@@ -210,6 +209,93 @@ function App() {
         </>
       )}
     </div>
+  );
+}
+
+// ---- Root App with routing ----
+function App() {
+  // Page state: "home" | "auth" | "chat"
+  const [page, setPage] = useS("home");
+  const [user, setUser] = useS(null);
+  const [authChecked, setAuthChecked] = useS(false);
+
+  // Listen for auth state
+  useE(() => {
+    const token = localStorage.getItem("bhagyakram_token");
+    if (!token) {
+      setAuthChecked(true);
+      return;
+    }
+
+    fetch("http://localhost:8000/api/auth/me", {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Invalid token");
+        return res.json();
+      })
+      .then((data) => {
+        setUser({ email: data.email });
+        setAuthChecked(true);
+        if (page === "auth") setPage("chat");
+      })
+      .catch(() => {
+        localStorage.removeItem("bhagyakram_token");
+        setUser(null);
+        setAuthChecked(true);
+      });
+  }, []);
+
+  const handleGetStarted = () => {
+    if (user) {
+      setPage("chat");
+    } else {
+      setPage("auth");
+    }
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("bhagyakram_token");
+    setUser(null);
+    setPage("home");
+  };
+
+  const handleAuthSuccess = (email) => {
+    setUser({ email });
+    setPage("chat");
+  };
+
+  // Show nothing until auth state is checked
+  if (!authChecked) {
+    return (
+      <div style={{
+        height: "100%", display: "flex", alignItems: "center", justifyContent: "center",
+        background: "var(--base)",
+      }}>
+        <LogoMark size={48} spin glow />
+      </div>
+    );
+  }
+
+  if (page === "home") {
+    return <HomePage onGetStarted={handleGetStarted} />;
+  }
+
+  if (page === "auth") {
+    return (
+      <AuthPage
+        onAuthSuccess={handleAuthSuccess}
+        onBackToHome={() => setPage("home")}
+      />
+    );
+  }
+
+  // page === "chat"
+  return (
+    <ChatApp
+      userEmail={user ? user.email : null}
+      onSignOut={handleSignOut}
+    />
   );
 }
 

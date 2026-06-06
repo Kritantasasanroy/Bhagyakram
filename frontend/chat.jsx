@@ -43,12 +43,12 @@ function MdText({ text }) {
   );
 }
 
-// ---- Aradhana (assistant) message — no bubble, lotus beside first line ----
-function AradhanaMessage({ text, streaming }) {
+// ---- Bhagyakram (assistant) message — logo beside first line ----
+function BhagyakramMessage({ text, streaming }) {
   return (
     <div style={{ display: "flex", gap: 14, maxWidth: 680, animation: "msgRise 0.3s var(--ease) both" }}>
       <div style={{ flexShrink: 0, marginTop: 2 }}>
-        <LotusMark size={22} glow spin={streaming} />
+        <LogoMark size={22} glow spin={streaming} />
       </div>
       <div style={{
         fontFamily: "var(--sans)", fontSize: 15.5, lineHeight: 1.72,
@@ -76,14 +76,13 @@ function UserMessage({ text }) {
   );
 }
 
-// Little hooks to keep the user engaged while tools run — shown one at a time
-// beneath the activity chip, rotating every few seconds.
+// Little hooks to keep the user engaged while tools run
 const LOADING_FACTS = [
   "The Moon moves about one degree every two hours — your chart is a snapshot of a sky in constant motion.",
   "Your rising sign can change every ~2 hours, which is why an accurate birth time matters so much.",
   "Mercury appears to go retrograde 3–4 times a year — it never actually reverses, it just looks that way from Earth.",
   "No two birth charts are ever exactly alike unless two people are born at the same moment in the same place.",
-  "The Sun spends about a month in each zodiac sign — that placement is your familiar “star sign.”",
+  "The Sun spends about a month in each zodiac sign — that placement is your familiar 'star sign.'",
   "Saturn takes ~29.5 years to circle the zodiac, which is why your Saturn return arrives around age 29.",
   "Astrologers read the sky as a map of meaning, not a set of commands — it describes weather, not fate.",
   "Your Ascendant, Sun, and Moon together form the core trio most astrologers read first.",
@@ -118,7 +117,7 @@ function ToolIndicator({ label, leaving }) {
         border: "1px solid var(--hairline-2)",
         animation: leaving ? "none" : "glowPulse 2.2s ease-in-out infinite",
       }}>
-        <LotusMark size={16} spin glow />
+        <LogoMark size={16} spin glow />
         <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ivory-dim)", letterSpacing: "0.02em" }}>
           {label}
         </span>
@@ -149,7 +148,7 @@ function ToolIndicator({ label, leaving }) {
 function EmptyState({ onPrompt }) {
   const prompts = [
     "What does my chart say about my career?",
-    "What’s the energy looking like today?",
+    "What's the energy looking like today?",
     "Tell me about my rising sign.",
   ];
   return (
@@ -157,7 +156,7 @@ function EmptyState({ onPrompt }) {
       flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       gap: 30, padding: "20px", textAlign: "center",
     }}>
-      <AradhanaLogo scale={0.62} animate tagline />
+      <BhagyakramLogo scale={0.62} animate tagline />
       <p style={{ fontSize: 15.5, color: "var(--ivory-dim)", margin: 0, maxWidth: 340, lineHeight: 1.6 }}>
         Share your birth details and ask me anything.
       </p>
@@ -222,7 +221,7 @@ function Composer({ onSend, disabled }) {
           value={val}
           onChange={grow}
           onKeyDown={onKey}
-          placeholder={"Ask Aradhana…"}
+          placeholder={"Ask Bhagyakram AI…"}
           style={{
             flex: 1, resize: "none", border: "none", outline: "none", background: "transparent",
             color: "var(--ivory)", fontFamily: "var(--sans)", fontSize: 15, lineHeight: 1.5,
@@ -234,7 +233,7 @@ function Composer({ onSend, disabled }) {
           disabled={disabled || !val.trim()}
           aria-label="Send"
           style={{
-            flexShrink: 0, width: 40, height: 40, borderRadius: 11, border: "none",
+            flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: "none",
             cursor: (disabled || !val.trim()) ? "default" : "pointer",
             background: val.trim() && !disabled
               ? "linear-gradient(135deg, #E4C766, #C9A84C)"
@@ -254,7 +253,7 @@ function Composer({ onSend, disabled }) {
 }
 
 // ---- The whole right-hand chat panel ----
-function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetails, showEditChip }) {
+function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetails, showEditChip, userEmail, onSignOut }) {
   const scrollRef = useRefC(null);
 
   useEffectC(() => {
@@ -266,6 +265,34 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
 
   return (
     <div style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* Top bar with user info */}
+      {userEmail && (
+        <div style={{
+          position: "absolute", top: 14, right: 18, zIndex: 5,
+          display: "flex", alignItems: "center", gap: 10,
+        }}>
+          <span style={{
+            fontFamily: "var(--mono)", fontSize: 11, color: "var(--ivory-faint)",
+            letterSpacing: "0.02em",
+          }}>
+            {userEmail}
+          </span>
+          <button
+            onClick={onSignOut}
+            style={{
+              background: "rgba(244,239,230,0.06)", border: "1px solid var(--hairline-2)",
+              borderRadius: 8, padding: "5px 12px",
+              color: "var(--ivory-dim)", fontFamily: "var(--sans)", fontSize: 12,
+              cursor: "pointer", transition: "all 0.2s var(--ease)",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = "rgba(217,138,106,0.4)"; e.target.style.color = "var(--error)"; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = "var(--hairline-2)"; e.target.style.color = "var(--ivory-dim)"; }}
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
+
       {/* mobile edit-details chip */}
       {showEditChip && (
         <div style={{ position: "absolute", top: 14, left: 0, right: 0, display: "flex", justifyContent: "center", zIndex: 5, pointerEvents: "none" }}>
@@ -273,8 +300,8 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
             pointerEvents: "auto",
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "rgba(18,26,46,0.86)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid var(--hairline-2)", borderRadius: 99, padding: "8px 15px",
-            color: "var(--ivory-dim)", fontFamily: "var(--mono)", fontSize: 11.5, letterSpacing: "0.04em", cursor: "pointer",
+            border: "1px solid var(--hairline-2)", borderRadius: 99, padding: "10px 18px",
+            color: "var(--ivory-dim)", fontFamily: "var(--mono)", fontSize: 12, letterSpacing: "0.04em", cursor: "pointer",
           }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
               <path d="M12 2c-3.9 0-7 3.1-7 7 0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7z" stroke="var(--gold)" strokeWidth="1.8" />
@@ -289,11 +316,11 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
         {empty ? (
           <EmptyState onPrompt={onPrompt} />
         ) : (
-          <div style={{ maxWidth: 760, width: "100%", margin: "0 auto", padding: "40px 22px 12px", display: "flex", flexDirection: "column", gap: 22 }}>
+          <div style={{ maxWidth: 760, width: "100%", margin: "0 auto", padding: "24px 16px 12px", display: "flex", flexDirection: "column", gap: 22 }}>
             {messages.map((m) =>
               m.role === "user"
                 ? <UserMessage key={m.id} text={m.text} />
-                : <AradhanaMessage key={m.id} text={m.text} streaming={m.id === streamingId} />
+                : <BhagyakramMessage key={m.id} text={m.text} streaming={m.id === streamingId} />
             )}
             {tool && <ToolIndicator label={tool.label} leaving={tool.leaving} />}
           </div>
@@ -324,7 +351,7 @@ function ConfirmationDialog({ data, onConfirm, onDecline }) {
       }}>
         <div style={{ display: "flex", gap: 14, marginBottom: 22 }}>
           <div style={{ flexShrink: 0, marginTop: 3 }}>
-            <LotusMark size={20} glow />
+            <LogoMark size={20} glow />
           </div>
           <p style={{
             margin: 0, fontFamily: "var(--serif)", fontSize: 15.5, lineHeight: 1.68,

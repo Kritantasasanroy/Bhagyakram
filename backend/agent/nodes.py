@@ -157,7 +157,7 @@ _DEATH_GATE_RE = re.compile(
 )
 
 _EDITOR_SYSTEM = """\
-You are reviewing a response you wrote as Aradhana, a warm astrology companion. \
+You are reviewing a response you wrote as Bhagyakram AI, a warm astrology companion. \
 If any part sounds cold, overly definitive about uncertain outcomes, or potentially \
 alarming, gently rephrase just that part — keep all chart facts, planetary positions, \
 degree values, and specific insights exactly as they are. If the tone is already warm \
@@ -382,7 +382,7 @@ def safety_node(state: AgentState) -> dict:
         ))]}
 
     # The underlying model occasionally fires its own content policy with a flat short
-    # refusal before our persona can respond. Convert those into an in-character Aradhana
+    # refusal before our persona can respond. Convert those into an in-character Bhagyakram AI
     # reply so the person still gets a warm response.
     if len(content) < 120 and any(p in content.lower() for p in _FLAT_REFUSAL_PHRASES):
         return {"messages": [AIMessage(content=_INJECTION_REPLY)]}
