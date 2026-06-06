@@ -3,15 +3,15 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://<YOUR_RENDER_APP_URL>.onrender.com/api/$1"
+      "destination": "https://bhagyakram-backend.onrender.com/api/$1"
     },
     {
       "source": "/chat",
-      "destination": "https://<YOUR_RENDER_APP_URL>.onrender.com/chat"
+      "destination": "https://bhagyakram-backend.onrender.com/chat"
     },
     {
       "source": "/resume",
-      "destination": "https://<YOUR_RENDER_APP_URL>.onrender.com/resume"
+      "destination": "https://bhagyakram-backend.onrender.com/resume"
     }
   ]
 }
