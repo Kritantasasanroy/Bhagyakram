@@ -257,6 +257,9 @@ html, body {
   animation: cardReveal 0.6s var(--ease) both;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .feature-card::before {
@@ -318,6 +321,10 @@ html, body {
   text-align: center;
   transition: all 0.3s var(--ease);
   cursor: default;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
 }
 
 .tech-card:hover {
@@ -415,6 +422,7 @@ html, body {
   gap: 18px;
   align-items: flex-start;
   transition: all 0.3s var(--ease);
+  height: 100%;
 }
 
 .privacy-card:hover {

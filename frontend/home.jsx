@@ -33,6 +33,35 @@ function AnimatedCount({ target, suffix = "", duration = 2000 }) {
   );
 }
 
+// ---- Premium Icons ----
+function PremiumIcon({ name, size = 24 }) {
+  const paths = {
+    compass: <><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></>,
+    network: <><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></>,
+    book: <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+    zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+    shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+    database: <><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>,
+    pen: <><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-1.5L2 22v3h3L18 13z"/><path d="M2 22l3 3"/></>,
+    lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
+    bot: <><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></>,
+    spark: <><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></>,
+    code: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>,
+    layer: <><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>,
+    server: <><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></>,
+    map: <><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></>,
+    brain: <><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></>,
+    eye_off: <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></>,
+    clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+    globe: <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--gold)" }}>
+      {paths[name] || paths.spark}
+    </svg>
+  );
+}
+
 // ---- Scroll-reveal wrapper ----
 function Reveal({ children, delay = 0 }) {
   const [visible, setVisible] = useStateH(false);
@@ -205,42 +234,42 @@ function HeroSection({ onGetStarted }) {
 function FeaturesSection() {
   const features = [
     {
-      icon: "🪐",
+      icon: "compass",
       title: "Real Natal Chart Computation",
       desc: "Planetary positions calculated via pyswisseph (Swiss Ephemeris) — no approximation, no guessing. Accurate from 1800 to 2400 CE.",
     },
     {
-      icon: "🤖",
+      icon: "network",
       title: "LangGraph Multi-Agent Pipeline",
       desc: "A 7-node directed graph: router → sensitivity gate → reasoning → tools → cache → safety → editor. Each node has a clear, testable purpose.",
     },
     {
-      icon: "📚",
+      icon: "book",
       title: "RAG Knowledge Base",
       desc: "7 curated markdown files indexed into ChromaDB with sentence-transformers embeddings. The agent grounds every interpretation in astrological tradition.",
     },
     {
-      icon: "⚡",
+      icon: "zap",
       title: "Streaming SSE Responses",
       desc: "Tokens arrive in real-time via Server-Sent Events. A live activity chip shows which tool is running. The UI feels alive, not loading.",
     },
     {
-      icon: "🛡️",
+      icon: "shield",
       title: "Human-in-the-Loop Safety",
       desc: "LangGraph interrupt() pauses execution for sensitive topics. A confirmation dialog lets you choose how the reading proceeds — you stay in control.",
     },
     {
-      icon: "💾",
+      icon: "database",
       title: "Session Persistence",
       desc: "Charts and conversations persist in SQLite. Return in a new tab — your chart is cached, your history is restored, nothing recomputes.",
     },
     {
-      icon: "✏️",
+      icon: "pen",
       title: "Second Editor Agent",
       desc: "A post-safety LLM pass reviews tone without altering facts. Chart data stays untouched; only phrasing softens. Transparent and honest.",
     },
     {
-      icon: "🔒",
+      icon: "lock",
       title: "Prompt Injection Handling",
       desc: "When the model's safety layer fires a flat refusal, the safety node replaces it with an in-character response that stays warm and offers a real reading.",
     },
@@ -259,7 +288,7 @@ function FeaturesSection() {
         {features.map((f, i) => (
           <Reveal key={i} delay={i * 80}>
             <div className="feature-card">
-              <div className="feature-card-icon">{f.icon}</div>
+              <div className="feature-card-icon"><PremiumIcon name={f.icon} size={24} /></div>
               <div className="feature-card-title">{f.title}</div>
               <div className="feature-card-desc">{f.desc}</div>
             </div>
@@ -273,18 +302,18 @@ function FeaturesSection() {
 // ---- Tech stack section ----
 function TechSection() {
   const techs = [
-    { icon: "🔗", name: "LangGraph", role: "Agent Orchestration" },
-    { icon: "🦜", name: "LangChain", role: "LLM Framework" },
-    { icon: "📖", name: "RAG Pipeline", role: "Knowledge Retrieval" },
-    { icon: "✨", name: "Google Gemini", role: "Language Model" },
-    { icon: "⚡", name: "FastAPI", role: "Backend + SSE" },
-    { icon: "🗄️", name: "ChromaDB", role: "Vector Store" },
-    { icon: "🔭", name: "Swiss Ephemeris", role: "Chart Computation" },
-    { icon: "🧠", name: "sentence-transformers", role: "Embeddings" },
-    { icon: "📦", name: "SQLite", role: "Session Store" },
-    { icon: "🌐", name: "React", role: "Frontend UI" },
-    { icon: "🔐", name: "Neon DB", role: "Auth & Storage" },
-    { icon: "🗺️", name: "Nominatim", role: "Geocoding" },
+    { icon: "network", name: "LangGraph", role: "Agent Orchestration" },
+    { icon: "code", name: "LangChain", role: "LLM Framework" },
+    { icon: "book", name: "RAG Pipeline", role: "Knowledge Retrieval" },
+    { icon: "spark", name: "Google Gemini", role: "Language Model" },
+    { icon: "server", name: "FastAPI", role: "Backend + SSE" },
+    { icon: "layer", name: "ChromaDB", role: "Vector Store" },
+    { icon: "compass", name: "Swiss Ephemeris", role: "Chart Computation" },
+    { icon: "brain", name: "sentence-transformers", role: "Embeddings" },
+    { icon: "database", name: "SQLite", role: "Session Store" },
+    { icon: "globe", name: "React", role: "Frontend UI" },
+    { icon: "lock", name: "Neon DB", role: "Auth & Storage" },
+    { icon: "map", name: "Nominatim", role: "Geocoding" },
   ];
 
   return (
@@ -300,7 +329,7 @@ function TechSection() {
         {techs.map((t, i) => (
           <Reveal key={i} delay={i * 50}>
             <div className="tech-card">
-              <div style={{ fontSize: 28 }}>{t.icon}</div>
+              <div style={{ display: "flex", justifyContent: "center" }}><PremiumIcon name={t.icon} size={28} /></div>
               <div className="tech-card-name">{t.name}</div>
               <div className="tech-card-role">{t.role}</div>
             </div>
@@ -350,22 +379,22 @@ function ArchitectureSection() {
 function PrivacySection() {
   const items = [
     {
-      icon: "🔐",
+      icon: "lock",
       title: "Local-First Storage",
       desc: "All session data lives in SQLite on the server. No external databases, no cloud analytics. Your birth details never leave the deployment.",
     },
     {
-      icon: "🚫",
+      icon: "eye_off",
       title: "No Tracking",
       desc: "Zero analytics scripts, no cookies beyond session ID, no third-party trackers. The app doesn't even know your name unless you tell it.",
     },
     {
-      icon: "🛡️",
+      icon: "shield",
       title: "Safety Guardrails",
       desc: "Multi-layer content safety: router classification, sensitivity gate with human-in-the-loop, safety node for medical/legal/financial topics, prompt injection handling.",
     },
     {
-      icon: "⏳",
+      icon: "clock",
       title: "Session-Scoped Data",
       desc: "Your data exists only within your session. There's no user profiling, no cross-session linking, no recommendation engine mining your chart.",
     },
@@ -383,7 +412,7 @@ function PrivacySection() {
         {items.map((item, i) => (
           <Reveal key={i} delay={i * 100}>
             <div className="privacy-card">
-              <div className="privacy-icon">{item.icon}</div>
+              <div className="privacy-icon"><PremiumIcon name={item.icon} size={24} /></div>
               <div>
                 <div style={{ fontWeight: 600, fontSize: 15, color: "var(--ivory)", marginBottom: 6 }}>{item.title}</div>
                 <div style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ivory-dim)" }}>{item.desc}</div>
@@ -466,7 +495,7 @@ function FounderSection() {
 // ---- Footer ----
 function HomeFooter() {
   return (
-    <footer className="home-footer">
+    <footer className="home-footer" style={{ paddingBottom: 60 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
         <LogoMark size={22} glow />
         <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18, color: "var(--gold)" }}>Bhagyakram</span>
@@ -477,6 +506,24 @@ function HomeFooter() {
       <p style={{ margin: 0, fontSize: 12, color: "rgba(244,239,230,0.25)" }}>
         Powered by LangGraph · LangChain · Google Gemini · Swiss Ephemeris
       </p>
+      
+      <div style={{
+        marginTop: 40,
+        paddingTop: 30,
+        borderTop: "1px solid rgba(244,239,230,0.06)",
+        textAlign: "center"
+      }}>
+        <p style={{ 
+          margin: "0 auto", 
+          fontSize: 11, 
+          color: "rgba(244, 239, 230, 0.4)", 
+          maxWidth: 680, 
+          lineHeight: 1.6, 
+          fontStyle: "italic" 
+        }}>
+          <strong>AI Disclaimer:</strong> Bhagyakram is an AI-powered conversational agent. While it relies on real astronomical data, ephemeris libraries, and curated astrological texts, its interpretations are generated by AI. It cannot be fully trusted for absolute accuracy, and should not replace professional medical, legal, or financial advice. Astrology offers reflection, not fate.
+        </p>
+      </div>
     </footer>
   );
 }

@@ -316,7 +316,7 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
         {empty ? (
           <EmptyState onPrompt={onPrompt} />
         ) : (
-          <div style={{ maxWidth: 760, width: "100%", margin: "0 auto", padding: "24px 16px 12px", display: "flex", flexDirection: "column", gap: 22 }}>
+          <div style={{ maxWidth: 760, width: "100%", margin: "0 auto", padding: showEditChip ? "72px 16px 12px" : "24px 16px 12px", display: "flex", flexDirection: "column", gap: 22 }}>
             {messages.map((m) =>
               m.role === "user"
                 ? <UserMessage key={m.id} text={m.text} />
