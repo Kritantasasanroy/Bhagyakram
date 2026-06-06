@@ -28,7 +28,7 @@ function AuthPage({ onAuthSuccess, onBackToHome }) {
     setError(null);
     try {
       const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
-      const response = await fetch(`http://localhost:8000${endpoint}`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
