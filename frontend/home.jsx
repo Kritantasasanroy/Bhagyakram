@@ -236,7 +236,7 @@ function FeaturesSection() {
     {
       icon: "compass",
       title: "Real Natal Chart Computation",
-      desc: "Planetary positions calculated via pyswisseph (Swiss Ephemeris) — no approximation, no guessing. Accurate from 1800 to 2400 CE.",
+      desc: "Planetary positions calculated via pyswisseph (Swiss Ephemeris): no approximation, no guessing. Accurate from 1800 to 2400 CE.",
     },
     {
       icon: "network",
@@ -256,12 +256,12 @@ function FeaturesSection() {
     {
       icon: "shield",
       title: "Human-in-the-Loop Safety",
-      desc: "LangGraph interrupt() pauses execution for sensitive topics. A confirmation dialog lets you choose how the reading proceeds — you stay in control.",
+      desc: "LangGraph interrupt() pauses execution for sensitive topics. A confirmation dialog lets you choose how the reading proceeds, ensuring you stay in control.",
     },
     {
       icon: "database",
       title: "Session Persistence",
-      desc: "Charts and conversations persist in SQLite. Return in a new tab — your chart is cached, your history is restored, nothing recomputes.",
+      desc: "Charts and conversations persist in SQLite. Return in a new tab and your chart is cached, your history is restored, and nothing recomputes.",
     },
     {
       icon: "pen",
@@ -442,7 +442,7 @@ function FounderSection() {
           </div>
           <div className="founder-info">
             <h3>Kritanta Sasan Roy</h3>
-            <div className="founder-role">Founder & Developer — Bhagyakram AI</div>
+            <div className="founder-role">Founder & Developer | Bhagyakram AI</div>
             <p className="founder-bio">
               An AI/ML engineer with deep expertise in building production-grade LLM applications. 
               Experienced in architecting multi-agent systems using <strong style={{color:"var(--ivory)"}}>LangGraph</strong> and <strong style={{color:"var(--ivory)"}}>LangChain</strong>, 
@@ -450,7 +450,7 @@ function FounderSection() {
               and fine-tuning large language models for domain-specific tasks.
             </p>
             <p className="founder-bio" style={{ marginTop: 0 }}>
-              Bhagyakram represents the convergence of ancient astrological wisdom with modern AI engineering — 
+              Bhagyakram represents the convergence of ancient astrological wisdom with modern AI engineering: 
               real planetary computation, agentic reasoning, and thoughtful human-in-the-loop design, 
               all running on a zero-cost open-source stack.
             </p>

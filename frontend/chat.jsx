@@ -78,13 +78,13 @@ function UserMessage({ text }) {
 
 // Little hooks to keep the user engaged while tools run
 const LOADING_FACTS = [
-  "The Moon moves about one degree every two hours — your chart is a snapshot of a sky in constant motion.",
+  "The Moon moves about one degree every two hours: your chart is a snapshot of a sky in constant motion.",
   "Your rising sign can change every ~2 hours, which is why an accurate birth time matters so much.",
-  "Mercury appears to go retrograde 3–4 times a year — it never actually reverses, it just looks that way from Earth.",
+  "Mercury appears to go retrograde 3–4 times a year: it never actually reverses, it just looks that way from Earth.",
   "No two birth charts are ever exactly alike unless two people are born at the same moment in the same place.",
-  "The Sun spends about a month in each zodiac sign — that placement is your familiar 'star sign.'",
+  "The Sun spends about a month in each zodiac sign, and that placement is your familiar 'star sign.'",
   "Saturn takes ~29.5 years to circle the zodiac, which is why your Saturn return arrives around age 29.",
-  "Astrologers read the sky as a map of meaning, not a set of commands — it describes weather, not fate.",
+  "Astrologers read the sky as a map of meaning, not a set of commands: it describes weather, not fate.",
   "Your Ascendant, Sun, and Moon together form the core trio most astrologers read first.",
 ];
 
