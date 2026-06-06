@@ -6,13 +6,17 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 import bcrypt
 from jose import JWTError, jwt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from db.neon import get_db
 from db.models import User
 
 # Configuration for JWT
 # In production, SECRET_KEY should be loaded from environment variables
-SECRET_KEY = "bhagyakram_super_secret_key_change_in_production"
+SECRET_KEY = os.environ.get("SECRET_KEY", "bhagyakram_super_secret_key_change_in_production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
