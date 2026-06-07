@@ -17,3 +17,5 @@ eval/results/*.csv
 *.zip
 .vscode/
 .claude/
+logo.png
+frontend/logo.png
