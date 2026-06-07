@@ -6,7 +6,7 @@ from collections import Counter
 from datetime import date
 from typing import Literal
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage
 
 from agent.llm import get_llm
 from agent.prompts import build_system_prompt
@@ -257,7 +257,7 @@ def reasoning_node(state: AgentState) -> dict:
     if (
         not state.get("birth_chart")
         and not _has_usable_birth_details(state.get("birth_details"))
-        and _needs_birth_data(state)
+        and (state.get("intent") == "chart_request" or _needs_birth_data(state))
     ):
         return {
             "messages": [AIMessage(content=_NEED_DETAILS)],
@@ -330,27 +330,8 @@ def editor_node(state: AgentState) -> dict:
     a single replace event instead. The new message reuses the original message id,
     so add_messages swaps it in place rather than appending a second assistant turn.
     """
-    if state.get("intent") not in ("chart_request", "freeform"):
-        return {}
-
-    last = state["messages"][-1] if state["messages"] else None
-    if last is None or getattr(last, "type", None) != "ai":
-        return {}
-
-    content = last.content
-    if not isinstance(content, str) or len(content) < 500:
-        return {}
-
-    llm = get_llm(temperature=0.2).with_config({"tags": ["editor"]})
-    messages = [SystemMessage(content=_EDITOR_SYSTEM), HumanMessage(content=content)]
-    try:
-        response = _invoke_with_backoff(llm, messages, attempts=2)
-        polished = _text_of(response.content).strip()
-    except Exception:
-        return {}  # editor failure is graceful — the original reading is kept
-
-    if polished and polished != content.strip():
-        return {"messages": [AIMessage(content=polished, id=getattr(last, "id", None))]}
+    # Editor disabled: the second LLM call doubled rate-limit usage and latency
+    # without meaningfully improving responses. The base model's tone is already good.
     return {}
 
 
