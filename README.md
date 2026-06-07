@@ -1,3 +1,13 @@
+---
+title: Bhagyakram
+emoji: ✨
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Bhagyakram
 
 A conversational astrology companion. You share your birth details, it computes your actual natal chart using real planetary data, and then you can ask it anything — your career, relationships, what the energy looks like today, your Saturn return. It reasons in steps, calls tools to get real data, and responds with warmth.

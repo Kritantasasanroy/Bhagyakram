@@ -1,0 +1,9 @@
+backend/.venv
+backend/**/__pycache__
+backend/__pycache__
+backend/sessions.db
+backend/.env
+.env
+.git
+*.log
+eval/results/*.csv
