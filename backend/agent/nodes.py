@@ -341,8 +341,8 @@ def editor_node(state: AgentState) -> dict:
     if not isinstance(content, str) or len(content) < 500:
         return {}
 
-    # Use the lite model for the editor — faster, separate quota bucket.
-    llm = get_llm(temperature=0.2, model="gemini-2.0-flash-lite").with_config({"tags": ["editor"]})
+    # Use the fast 8B model for the editor — tone edits don't need the big model.
+    llm = get_llm(temperature=0.2, model="llama-3.1-8b-instant").with_config({"tags": ["editor"]})
     messages = [SystemMessage(content=_EDITOR_SYSTEM), HumanMessage(content=content)]
     try:
         response = _invoke_with_backoff(llm, messages, attempts=2)
