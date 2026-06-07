@@ -103,10 +103,7 @@ function ChatApp({ userEmail, onSignOut }) {
       .catch(() => {});
   }, []);
 
-  const clearChat = async () => {
-    try {
-      await fetch(`/session/${sessionId}`, { method: "DELETE", headers: authHeaders() });
-    } catch (_) {}
+  const clearChat = () => {
     const newId = "sess_" + Math.random().toString(36).slice(2, 10);
     localStorage.setItem(SESSION_KEY, newId);
     setSessionId(newId);
@@ -115,6 +112,8 @@ function ChatApp({ userEmail, onSignOut }) {
     setStreamingId(null);
     hasRead.current = false;
     turnCount.current = 0;
+    // Delete server session in background — UI doesn't wait for this
+    fetch(`/session/${sessionId}`, { method: "DELETE", headers: authHeaders() }).catch(() => {});
   };
 
 
