@@ -14,8 +14,8 @@ from pydantic import BaseModel
 
 from agent.chart_precompute import precompute_chart
 from agent.graph import graph
-from agent.state import AgentState, BirthDetails
-from db.sessions import get_session_meta, init_db, load_session, save_session
+from agent.state import AgentState
+from db.sessions import delete_session, get_session_meta, init_db, load_session, save_session
 from db.neon import engine, Base
 import db.models
 from api.auth import router as auth_router
@@ -56,17 +56,23 @@ def startup():
     threading.Thread(target=_warm_kb, daemon=True).start()
 
 
+class BirthDetailsInput(BaseModel):
+    date: str = ""
+    time: str = ""
+    place: str = ""
+
+
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
-    birth_details: Optional[BirthDetails] = None
+    birth_details: Optional[BirthDetailsInput] = None
 
 
 class ResumeRequest(BaseModel):
     thread_id: str
     session_id: str
     confirmed: bool = True
-    birth_details: Optional[BirthDetails] = None
+    birth_details: Optional[BirthDetailsInput] = None
 
 
 _EMPTY_GREETING = (
@@ -116,7 +122,12 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
     session = load_session(session_id)
     history = session["messages"] if session else []
     cached_chart = session["birth_chart"] if session else None
-    birth_details = req.birth_details or (session["birth_details"] if session else None)
+    # Convert Pydantic model → plain dict; drop blank fields so an empty form
+    # doesn't look like real birth data to the agent.
+    _bd = req.birth_details.model_dump() if req.birth_details else None
+    if _bd:
+        _bd = {k: v for k, v in _bd.items() if v and v.strip()} or None
+    birth_details = _bd or (session["birth_details"] if session else None)
 
     # If the form gave us birth details and we don't have a chart yet, compute it
     # in Python now instead of spending two LLM tool rounds (geocode + compute) on it.
@@ -287,7 +298,8 @@ async def resume_agent(req: ResumeRequest) -> AsyncIterator[str]:
             yield f"data: {json.dumps({'type': 'replace', 'content': final_text})}\n\n"
 
     try:
-        save_session(req.session_id, final_messages, req.birth_details, final_birth_chart)
+        _bd = req.birth_details.model_dump() if req.birth_details else None
+        save_session(req.session_id, final_messages, _bd, final_birth_chart)
     except Exception:
         pass
 
@@ -304,6 +316,27 @@ async def resume_chat(req: ResumeRequest):
     if not _HITL_AVAILABLE or Command is None:
         raise HTTPException(status_code=501, detail="HITL not available in this LangGraph version")
     return StreamingResponse(resume_agent(req), media_type="text/event-stream")
+
+
+@app.get("/session/{session_id}/messages")
+def get_session_messages(session_id: str):
+    session = load_session(session_id)
+    if not session:
+        return {"messages": []}
+    result = []
+    for m in session["messages"]:
+        t = getattr(m, "type", None)
+        if t == "human":
+            result.append({"role": "user", "text": m.content if isinstance(m.content, str) else ""})
+        elif t == "ai":
+            result.append({"role": "assistant", "text": _chunk_text(m.content)})
+    return {"messages": result}
+
+
+@app.delete("/session/{session_id}")
+def clear_session(session_id: str):
+    delete_session(session_id)
+    return {"status": "cleared"}
 
 
 @app.get("/session/{session_id}")

@@ -1,8 +1,22 @@
 /* global React, ReactDOM, CosmicBackground, BhagyakramLogo, LogoMark, BirthDetailsForm, ChatPanel, ConfirmationDialog, runAgent, runResume, HomePage, AuthPage */
 const { useState: useS, useRef: useR, useEffect: useE } = React;
 
+const SESSION_KEY = "bhagyakram_session_id";
+const AUTO_CLEAR_TURNS = 20;
+
 let _id = 0;
 const nextId = () => "m" + (++_id);
+
+function getOrCreateSessionId() {
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) { id = "sess_" + Math.random().toString(36).slice(2, 10); localStorage.setItem(SESSION_KEY, id); }
+  return id;
+}
+
+function authHeaders() {
+  const token = localStorage.getItem("bhagyakram_token");
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
 
 function useMedia(query) {
   const [m, setM] = useS(() => window.matchMedia(query).matches);
@@ -36,6 +50,26 @@ function ErrorToast({ message, onClose }) {
   );
 }
 
+function InfoToast({ message, onClose }) {
+  useE(() => {
+    const t = setTimeout(onClose, 4000);
+    return () => clearTimeout(t);
+  }, [message]);
+  return (
+    <div style={{
+      position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", zIndex: 100,
+      display: "flex", alignItems: "center", gap: 11,
+      background: "rgba(18,26,46,0.95)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+      border: "1px solid rgba(201,168,76,0.35)", borderRadius: 13, padding: "12px 18px",
+      color: "var(--ivory-dim)", fontSize: 14, maxWidth: "90vw",
+      boxShadow: "0 12px 40px rgba(0,0,0,0.4)", animation: "toastIn 0.4s var(--ease) both",
+    }}>
+      <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--gold)", flexShrink: 0 }} />
+      {message}
+    </div>
+  );
+}
+
 // ---- Chat App (the main astrology interface) ----
 function ChatApp({ userEmail, onSignOut }) {
   const isMobile = useMedia("(max-width: 860px)");
@@ -45,18 +79,44 @@ function ChatApp({ userEmail, onSignOut }) {
   const [tool, setTool] = useS(null);
   const [streamingId, setStreamingId] = useS(null);
   const [error, setError] = useS(null);
+  const [infoMsg, setInfoMsg] = useS(null);
   const [drawerOpen, setDrawerOpen] = useS(false);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useS(true);
   const [pendingConfirmation, setPendingConfirmation] = useS(null);
+  const [sessionId, setSessionId] = useS(getOrCreateSessionId);
 
-  const sessionId = useR((() => {
-    const KEY = "bhagyakram_session_id";
-    let id = sessionStorage.getItem(KEY);
-    if (!id) { id = "sess_" + Math.random().toString(36).slice(2, 10); sessionStorage.setItem(KEY, id); }
-    return id;
-  })()).current;
   const hasRead = useR(false);
   const cancelRef = useR(null);
+  const turnCount = useR(0);
+
+  // Restore previous session messages on mount
+  useE(() => {
+    fetch(`/session/${sessionId}/messages`, { headers: authHeaders() })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.messages && data.messages.length > 0) {
+          setMessages(data.messages.map(m => ({ id: nextId(), role: m.role, text: m.text })));
+          hasRead.current = true;
+          turnCount.current = data.messages.filter(m => m.role === "user").length;
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const clearChat = async () => {
+    try {
+      await fetch(`/session/${sessionId}`, { method: "DELETE", headers: authHeaders() });
+    } catch (_) {}
+    const newId = "sess_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(SESSION_KEY, newId);
+    setSessionId(newId);
+    setMessages([]);
+    setTool(null);
+    setStreamingId(null);
+    hasRead.current = false;
+    turnCount.current = 0;
+  };
+
 
   const busy = !!streamingId || !!tool;
 
@@ -83,7 +143,17 @@ function ChatApp({ userEmail, onSignOut }) {
           setStreamingId(botId);
           setMessages((prev) => prev.map((m) => m.id === botId ? { ...m, text: full } : m));
         },
-        onDone: () => { hasRead.current = true; setStreamingId(null); },
+        onDone: () => {
+          hasRead.current = true;
+          setStreamingId(null);
+          turnCount.current += 1;
+          if (turnCount.current >= AUTO_CLEAR_TURNS) {
+            setTimeout(() => {
+              clearChat();
+              setInfoMsg("Chat cleared after 20 exchanges — starting fresh.");
+            }, 1200);
+          }
+        },
         onError: (msg) => {
           setError(msg);
           setStreamingId(null);
@@ -142,6 +212,7 @@ function ChatApp({ userEmail, onSignOut }) {
       <CosmicBackground />
 
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
+      {infoMsg && <InfoToast message={infoMsg} onClose={() => setInfoMsg(null)} />}
 
       {pendingConfirmation && (
         <ConfirmationDialog
@@ -178,6 +249,7 @@ function ChatApp({ userEmail, onSignOut }) {
           showEditChip={isMobile || (!isMobile && !desktopSidebarOpen)}
           userEmail={userEmail}
           onSignOut={onSignOut}
+          onClearChat={clearChat}
         />
       </main>
 
@@ -236,8 +308,8 @@ function App() {
       })
       .then((data) => {
         setUser({ email: data.email });
+        setPage("chat");
         setAuthChecked(true);
-        if (page === "auth") setPage("chat");
       })
       .catch(() => {
         localStorage.removeItem("bhagyakram_token");

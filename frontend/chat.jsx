@@ -253,7 +253,7 @@ function Composer({ onSend, disabled }) {
 }
 
 // ---- The whole right-hand chat panel ----
-function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetails, showEditChip, userEmail, onSignOut }) {
+function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetails, showEditChip, userEmail, onSignOut, onClearChat }) {
   const scrollRef = useRefC(null);
 
   useEffectC(() => {
@@ -277,6 +277,21 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
           }}>
             {userEmail}
           </span>
+          {messages.length > 0 && (
+            <button
+              onClick={onClearChat}
+              style={{
+                background: "rgba(244,239,230,0.06)", border: "1px solid var(--hairline-2)",
+                borderRadius: 8, padding: "5px 12px",
+                color: "var(--ivory-dim)", fontFamily: "var(--sans)", fontSize: 12,
+                cursor: "pointer", transition: "all 0.2s var(--ease)",
+              }}
+              onMouseEnter={(e) => { e.target.style.borderColor = "rgba(201,168,76,0.4)"; e.target.style.color = "var(--gold)"; }}
+              onMouseLeave={(e) => { e.target.style.borderColor = "var(--hairline-2)"; e.target.style.color = "var(--ivory-dim)"; }}
+            >
+              Clear chat
+            </button>
+          )}
           <button
             onClick={onSignOut}
             style={{
