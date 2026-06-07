@@ -266,7 +266,7 @@ function FeaturesSection() {
     {
       icon: "pen",
       title: "Second Editor Agent",
-      desc: "A post-safety LLM pass reviews tone without altering facts. Chart data stays untouched; only phrasing softens. Transparent and honest.",
+      desc: "A fast Groq Llama 3.1 8B pass reviews tone without altering facts. Chart data stays untouched; only phrasing softens. Runs on a separate quota so it never slows the main reading.",
     },
     {
       icon: "lock",
@@ -305,7 +305,7 @@ function TechSection() {
     { icon: "network", name: "LangGraph", role: "Agent Orchestration" },
     { icon: "code", name: "LangChain", role: "LLM Framework" },
     { icon: "book", name: "RAG Pipeline", role: "Knowledge Retrieval" },
-    { icon: "spark", name: "Google Gemini", role: "Language Model" },
+    { icon: "zap", name: "Groq (Llama 3.3)", role: "Language Model" },
     { icon: "server", name: "FastAPI", role: "Backend + SSE" },
     { icon: "layer", name: "ChromaDB", role: "Vector Store" },
     { icon: "compass", name: "Swiss Ephemeris", role: "Chart Computation" },
@@ -321,8 +321,8 @@ function TechSection() {
       <Reveal>
         <div className="section-title">Technology Stack</div>
         <p className="section-subtitle">
-          Built entirely on free, open-source tools. The only paid component is a free-tier 
-          Google Gemini API key — no credit card required.
+          Built entirely on free, open-source tools. Primary inference runs on Groq's free
+          tier (llama-3.3-70b) — no credit card required.
         </p>
       </Reveal>
       <div className="tech-grid">
@@ -504,7 +504,7 @@ function HomeFooter() {
         Built with ✦ by <a href="https://www.linkedin.com/in/kritantasasanroy/" target="_blank" rel="noopener noreferrer">Kritanta Sasan Roy</a>
       </p>
       <p style={{ margin: 0, fontSize: 12, color: "rgba(244,239,230,0.25)" }}>
-        Powered by LangGraph · LangChain · Google Gemini · Swiss Ephemeris
+        Powered by LangGraph · LangChain · Groq · Swiss Ephemeris · Hugging Face Spaces
       </p>
       
       <div style={{
