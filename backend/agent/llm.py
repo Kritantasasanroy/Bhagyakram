@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 
-def get_llm(temperature: float = 0.7):
+def get_llm(temperature: float = 0.7, model: str | None = None):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise EnvironmentError(
@@ -16,7 +16,7 @@ def get_llm(temperature: float = 0.7):
             "Get a free key at https://aistudio.google.com and add it to backend/.env"
         )
 
-    model = os.getenv("LLM_MODEL", "gemini-2.0-flash")
+    model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
 
     from langchain_google_genai import ChatGoogleGenerativeAI
 

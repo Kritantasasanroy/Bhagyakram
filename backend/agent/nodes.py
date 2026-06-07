@@ -6,7 +6,7 @@ from collections import Counter
 from datetime import date
 from typing import Literal
 
-from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from agent.llm import get_llm
 from agent.prompts import build_system_prompt
@@ -330,8 +330,28 @@ def editor_node(state: AgentState) -> dict:
     a single replace event instead. The new message reuses the original message id,
     so add_messages swaps it in place rather than appending a second assistant turn.
     """
-    # Editor disabled: the second LLM call doubled rate-limit usage and latency
-    # without meaningfully improving responses. The base model's tone is already good.
+    if state.get("intent") not in ("chart_request", "freeform"):
+        return {}
+
+    last = state["messages"][-1] if state["messages"] else None
+    if last is None or getattr(last, "type", None) != "ai":
+        return {}
+
+    content = last.content
+    if not isinstance(content, str) or len(content) < 500:
+        return {}
+
+    # Use the lite model for the editor — faster, separate quota bucket.
+    llm = get_llm(temperature=0.2, model="gemini-2.0-flash-lite").with_config({"tags": ["editor"]})
+    messages = [SystemMessage(content=_EDITOR_SYSTEM), HumanMessage(content=content)]
+    try:
+        response = _invoke_with_backoff(llm, messages, attempts=2)
+        polished = _text_of(response.content).strip()
+    except Exception:
+        return {}
+
+    if polished and polished != content.strip():
+        return {"messages": [AIMessage(content=polished, id=getattr(last, "id", None))]}
     return {}
 
 
