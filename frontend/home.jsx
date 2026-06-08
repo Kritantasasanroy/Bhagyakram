@@ -230,153 +230,6 @@ function HeroSection({ onGetStarted }) {
   );
 }
 
-// ---- Sample reading preview (NEW) ----
-function SampleSection() {
-  const messages = [
-    {
-      role: "user",
-      text: "What does my rising sign say about how people see me?",
-    },
-    {
-      role: "bot",
-      text: "With **Scorpio Rising**, the first thing people notice about you isn't what you say — it's the intensity behind your eyes. You carry a quiet authority that makes others feel truly seen, which can be magnetic and a little unnerving in equal measure.\n\nYour Ascendant at **14°** sits close to the fixed star Zuben Elgenubi, historically associated with social reform and karmic purpose. People sense early on that you're not here for small talk.",
-    },
-    {
-      role: "user",
-      text: "How does that interact with my Gemini Sun?",
-    },
-    {
-      role: "bot",
-      text: "That's one of the most interesting tensions in your chart. Your **Gemini Sun in the 8th house** wants to explore, question, and scatter light across ideas — but Scorpio Rising filters everything through depth before it reaches the surface.\n\nThe result: people meet your intensity first, then slowly discover the playful, curious mind underneath. You reveal yourself in layers, rarely all at once.",
-    },
-  ];
-
-  return (
-    <section className="home-section">
-      <Reveal>
-        <div className="section-title">What a Reading Looks Like</div>
-        <p className="section-subtitle">
-          Not a generic horoscope — a real conversation grounded in your actual chart. Ask follow-up questions, explore any planet or house, go as deep as you want.
-        </p>
-      </Reveal>
-      <Reveal delay={150}>
-        <div style={{
-          maxWidth: 660, margin: "0 auto",
-          background: "rgba(10,15,28,0.72)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid var(--hairline-2)", borderRadius: 20,
-          padding: "24px 20px", display: "flex", flexDirection: "column", gap: 18,
-        }}>
-          {messages.map((m, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-              {m.role === "bot" && (
-                <div style={{ flexShrink: 0, marginRight: 10, marginTop: 2 }}>
-                  <LogoMark size={18} glow />
-                </div>
-              )}
-              <div style={{
-                maxWidth: "82%",
-                background: m.role === "user" ? "var(--violet-soft)" : "transparent",
-                border: m.role === "user" ? "1px solid rgba(124,98,196,0.28)" : "none",
-                borderRadius: m.role === "user" ? "16px 16px 4px 16px" : 0,
-                padding: m.role === "user" ? "10px 14px" : 0,
-                fontSize: 14, lineHeight: 1.72, color: "var(--ivory)", fontFamily: "var(--sans)",
-              }}>
-                {m.text.split(/(\*\*[^*]+\*\*)/).map((part, j) =>
-                  part.startsWith("**") && part.endsWith("**")
-                    ? <strong key={j} style={{ color: "var(--gold)", fontWeight: 600 }}>{part.slice(2, -2)}</strong>
-                    : part.split("\n").map((line, k, arr) =>
-                        line ? <span key={k}>{line}{k < arr.length - 1 && <br />}</span> : <br key={k} />
-                      )
-                )}
-              </div>
-            </div>
-          ))}
-          <div style={{
-            marginTop: 4, padding: "10px 14px",
-            background: "rgba(244,239,230,0.03)", border: "1px solid var(--hairline)",
-            borderRadius: 12, fontSize: 13, color: "var(--ivory-faint)",
-            fontFamily: "var(--mono)", letterSpacing: "0.02em", textAlign: "center",
-          }}>
-            Your actual chart · Ask anything →
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-// ---- How it works (NEW) ----
-function HowItWorksSection({ onGetStarted }) {
-  const steps = [
-    {
-      num: "01",
-      title: "Enter your birth details",
-      desc: "Date, time, and place of birth. Time matters — it pins your rising sign and house cusps.",
-    },
-    {
-      num: "02",
-      title: "Your chart is computed",
-      desc: "Real planetary positions are calculated via Swiss Ephemeris — accurate to the minute. No approximations, no lookup tables.",
-    },
-    {
-      num: "03",
-      title: "Ask anything",
-      desc: "Career, relationships, today's transits, a specific planet — the AI reads your actual chart and answers in plain language. Ask follow-ups naturally.",
-    },
-  ];
-
-  return (
-    <section id="how-it-works" className="home-section">
-      <Reveal>
-        <div className="section-title">How It Works</div>
-        <p className="section-subtitle">Three steps. No prior astrology knowledge needed.</p>
-      </Reveal>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-        gap: 24, maxWidth: 820, margin: "0 auto",
-      }}>
-        {steps.map((s, i) => (
-          <Reveal key={i} delay={i * 100}>
-            <div style={{
-              background: "rgba(15,21,37,0.55)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-              border: "1px solid var(--hairline-2)", borderRadius: 18,
-              padding: "28px 24px", height: "100%", boxSizing: "border-box",
-              transition: "border-color 0.3s var(--ease)",
-            }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)"}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--hairline-2)"}
-            >
-              <div style={{
-                fontFamily: "var(--mono)", fontSize: 36, fontWeight: 700,
-                color: "rgba(201,168,76,0.14)", lineHeight: 1, marginBottom: 16,
-              }}>{s.num}</div>
-              <div style={{ fontFamily: "var(--serif)", fontSize: 16, color: "var(--ivory)", marginBottom: 10 }}>
-                {s.title}
-              </div>
-              <div style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ivory-dim)" }}>{s.desc}</div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-      <Reveal delay={350}>
-        <div style={{ textAlign: "center", marginTop: 36 }}>
-          <button onClick={onGetStarted} style={{
-            background: "linear-gradient(135deg, #E4C766, #C9A84C)",
-            border: "none", borderRadius: 13, padding: "14px 30px",
-            color: "#1a1408", fontFamily: "var(--sans)", fontWeight: 600, fontSize: 15,
-            cursor: "pointer", transition: "box-shadow 0.3s var(--ease)",
-          }}
-            onMouseEnter={(e) => { e.target.style.boxShadow = "0 10px 36px rgba(201,168,76,0.3)"; }}
-            onMouseLeave={(e) => { e.target.style.boxShadow = "none"; }}>
-            Start Your Reading ✦
-          </button>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
 // ---- Features section ----
 function FeaturesSection() {
   const features = [
@@ -463,6 +316,8 @@ function TechSection() {
     { icon: "map", name: "Nominatim", role: "Geocoding" },
     { icon: "server", name: "Hugging Face Spaces", role: "Hosting (16GB RAM, Free)" },
     { icon: "shield", name: "Cloudflare", role: "CDN + Custom Domain" },
+    { icon: "compass", name: "Real-Time Chart Engine", role: "SVG Natal Chart · Live Render" },
+    { icon: "zap", name: "Multi-Key API Rotation", role: "6 Groq Keys · Zero Downtime" },
   ];
 
   return (
@@ -685,8 +540,6 @@ function HomePage({ onGetStarted }) {
       <div className="bhagyakram-home" style={{ position: "relative", zIndex: 1 }}>
         <HomeNav onGetStarted={onGetStarted} />
         <HeroSection onGetStarted={onGetStarted} />
-        <SampleSection />
-        <HowItWorksSection onGetStarted={onGetStarted} />
         <FeaturesSection />
         <ArchitectureSection />
         <TechSection />
