@@ -228,7 +228,7 @@ def run_case(case: dict, client: httpx.Client, run_id: str) -> dict:
         "tools_called": ", ".join(run["tools_seen"]) or ",",
         "latency_ms": run["latency_ms"],
         "tokens": run["token_count"] or ",",
-        "cost_usd": 0.00,  # free-tier Gemini does not bill per request
+        "cost_usd": 0.00,  # free-tier Groq does not bill per request
         "judge_helpfulness": judge_scores.get("helpfulness"),
         "judge_tone": judge_scores.get("tone"),
         "judge_groundedness": judge_scores.get("groundedness"),

@@ -46,8 +46,8 @@ def _allowed_tools(used: list[str]) -> list:
 def _text_of(content) -> str:
     """Normalise a message's content to a plain string.
 
-    Gemini returns content as a list of typed parts, e.g.
-    [{"type": "text", "text": "…"}], where OpenAI-style models return a string.
+    Some LLM providers return content as a list of typed parts, e.g.
+    [{"type": "text", "text": "…"}], rather than a plain string.
     Treating the list form as 'empty' is what made finished readings vanish into
     the rate-limit fallback, so every consumer must normalise first.
     """
@@ -304,7 +304,7 @@ def reasoning_node(state: AgentState) -> dict:
 
     tool_names = [tc["name"] for tc in (getattr(response, "tool_calls", None) or [])]
 
-    # Coerce Gemini's list-of-parts content into a plain string so the safety node,
+    # Coerce list-of-parts content into a plain string so the safety node,
     # session store, and streaming remainder all see real text rather than treating
     # a finished reading as empty.
     if not isinstance(response.content, str):

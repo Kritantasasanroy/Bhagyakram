@@ -2,7 +2,7 @@
 LLM-as-judge for the eval harness.
 
 Grades each response on four dimensions (1–5), one at a time.
-Uses the same Gemini key as the agent. Spot-check at least 10
+Uses the same Groq key as the agent. Spot-check at least 10
 verdicts by hand before trusting the averages.
 """
 
@@ -47,13 +47,13 @@ RUBRIC = {
     ),
 }
 
-JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-flash-lite-latest")
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "llama-3.3-70b-versatile")
 
 
 def _content_text(content) -> str:
-    """Normalise a model reply to a string. Gemini Flash-Lite returns content as a
-    list of typed parts ([{'type': 'text', 'text': '4'}]); calling .strip() on that
-    list is what was silently turning every judge score into None."""
+    """Normalise a model reply to a string. Some providers return content as a
+    list of typed parts; calling .strip() on that list would silently turn every
+    judge score into None."""
     if isinstance(content, str):
         return content
     if isinstance(content, list):
@@ -62,19 +62,17 @@ def _content_text(content) -> str:
 
 
 def _build_judge_llm():
-    from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain_groq import ChatGroq
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise EnvironmentError("GEMINI_API_KEY not set")
+        raise EnvironmentError("GROQ_API_KEY not set")
 
-    # thinking_budget=0 keeps the single-digit verdict fast; the judge should run
-    # on a different model from the agent so the two don't share a per-minute quota.
-    return ChatGoogleGenerativeAI(
+    return ChatGroq(
         model=JUDGE_MODEL,
-        google_api_key=api_key,
+        api_key=api_key,
         temperature=0,
-        thinking_budget=0,
+        max_tokens=8,
     )
 
 

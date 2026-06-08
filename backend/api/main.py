@@ -85,9 +85,9 @@ _EMPTY_GREETING = (
 def _chunk_text(content) -> str:
     """Extract plain text from a streaming chunk's content field.
 
-    Gemini returns chunks as a list of typed parts, e.g.
-    [{"type": "text", "text": "Hello"}]. OpenAI-compatible models return
-    a plain string. This normalises both to a single string.
+    Some LLM providers return chunks as a list of typed parts, e.g.
+    [{"type": "text", "text": "Hello"}]. Others return a plain string.
+    This normalises both to a single string.
     """
     if isinstance(content, str):
         return content

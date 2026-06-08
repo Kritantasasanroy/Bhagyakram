@@ -13,7 +13,7 @@ def precompute_chart(birth_details: Optional[dict]) -> Optional[dict]:
     so there's no reason to spend two LLM tool-calling rounds (geocode → compute)
     rediscovering them. Doing it in code here means the chart is in state before
     the agent runs , the model goes straight to interpreting, which on the free
-    Gemini tier is the difference between ~5 requests per message and ~1.
+    Groq tier is the difference between ~5 requests per message and ~1.
 
     Returns the chart dict on success, or None if details are incomplete or the
     place is ambiguous , in which case we fall back to the agent resolving it
