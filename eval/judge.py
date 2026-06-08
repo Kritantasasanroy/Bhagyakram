@@ -62,18 +62,8 @@ def _content_text(content) -> str:
 
 
 def _build_judge_llm():
-    from langchain_groq import ChatGroq
-
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        raise EnvironmentError("GROQ_API_KEY not set")
-
-    return ChatGroq(
-        model=JUDGE_MODEL,
-        api_key=api_key,
-        temperature=0,
-        max_tokens=8,
-    )
+    from agent.llm import get_llm
+    return get_llm(temperature=0, model=JUDGE_MODEL)
 
 
 def score_response(

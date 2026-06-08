@@ -8,7 +8,7 @@ from typing import Literal
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from agent.llm import get_llm
+from agent.llm import get_llm, rotate_key, key_count
 from agent.prompts import build_system_prompt
 from agent.state import AgentState
 from agent.tools.birth_chart import compute_birth_chart
@@ -228,25 +228,26 @@ def after_gate(state: AgentState) -> Literal["reasoning", "safety"]:
     return "reasoning"
 
 
-def _invoke_with_backoff(llm, messages, attempts: int = 3):
-    """Retry on rate-limit 429s with backoff: 8s then 20s.
+def _invoke_with_backoff(llm_factory, messages, attempts: int = 3):
+    """Retry on 429s: rotate to the next API key if the pool has more than one,
+    otherwise back off (8s then 20s) and retry with the same key.
 
-    TPM (tokens-per-minute) limits need longer waits than RPM limits -- the window
-    resets after ~60s but a partial wait is usually enough since we only need the
-    tail end of the window to clear. 8s + 20s covers typical bursty TPM exhaustion
-    without making a rate-limited turn feel frozen.
+    Accepts a zero-arg callable so each retry gets a fresh LLM instance built
+    with the newly rotated key.
     """
     delays = [8, 20]
     last_err = None
     for i in range(attempts):
         try:
-            return llm.invoke(messages)
+            return llm_factory().invoke(messages)
         except Exception as e:
             last_err = e
             is_rate_limit = "429" in str(e) or "rate-limit" in str(e).lower()
             if not is_rate_limit or i == attempts - 1:
                 raise
-            time.sleep(delays[min(i, len(delays) - 1)])
+            rotate_key()
+            if key_count() == 1:
+                time.sleep(delays[min(i, len(delays) - 1)])
     raise last_err  # pragma: no cover
 
 
@@ -286,14 +287,16 @@ def reasoning_node(state: AgentState) -> dict:
 
     at_last_step = state["step_count"] >= STEP_LIMIT - 1
 
-    llm = get_llm(temperature=0.7)
-    if allowed and not at_last_step:
-        llm = llm.bind_tools(allowed)
+    def _make_llm():
+        llm = get_llm(temperature=0.7)
+        if allowed and not at_last_step:
+            return llm.bind_tools(allowed)
+        return llm
 
     messages = [SystemMessage(content=system_content)] + list(state["messages"])
 
     try:
-        response = _invoke_with_backoff(llm, messages)
+        response = _invoke_with_backoff(_make_llm, messages)
     except Exception:
         fallback = AIMessage(content=_RATE_LIMIT_FALLBACK)
         fallback.additional_kwargs["degraded"] = True
@@ -341,11 +344,13 @@ def editor_node(state: AgentState) -> dict:
     if not isinstance(content, str) or len(content) < 500:
         return {}
 
-    # Use the fast 8B model for the editor , tone edits don't need the big model.
-    llm = get_llm(temperature=0.2, model="llama-3.1-8b-instant").with_config({"tags": ["editor"]})
     messages = [SystemMessage(content=_EDITOR_SYSTEM), HumanMessage(content=content)]
     try:
-        response = _invoke_with_backoff(llm, messages, attempts=2)
+        response = _invoke_with_backoff(
+            lambda: get_llm(temperature=0.2, model="llama-3.1-8b-instant").with_config({"tags": ["editor"]}),
+            messages,
+            attempts=2,
+        )
         polished = _text_of(response.content).strip()
     except Exception:
         return {}
