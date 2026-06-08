@@ -48,7 +48,9 @@ TIMEOUT = 240
 
 # Space out cases so the free-tier rate limit doesn't distort latency numbers.
 # Set EVAL_CASE_DELAY=0 when running against a paid key.
-CASE_DELAY = float(os.getenv("EVAL_CASE_DELAY", "6"))
+CASE_DELAY = float(os.getenv("EVAL_CASE_DELAY", "10"))
+
+_RATE_LIMIT_MARKER = "stars are a little crowded"
 
 
 def load_golden_set() -> list[dict]:
@@ -190,6 +192,10 @@ def check_behavioral(case: dict, run: dict) -> tuple[bool, str]:
 
 def run_case(case: dict, client: httpx.Client, run_id: str) -> dict:
     run = call_agent(case, client, run_id)
+    if _RATE_LIMIT_MARKER in run["response_text"]:
+        print(f"  [rate-limited, retrying in 45s]", end="", flush=True)
+        time.sleep(45)
+        run = call_agent(case, client, run_id)
     check_type = case.get("check_type", "behavioral")
 
     passed = False
