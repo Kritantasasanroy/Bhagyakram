@@ -228,26 +228,41 @@ def after_gate(state: AgentState) -> Literal["reasoning", "safety"]:
     return "reasoning"
 
 
-def _invoke_with_backoff(llm_factory, messages, attempts: int | None = None):
-    """Retry on 429s: rotate to the next API key if the pool has more than one,
-    otherwise back off (8s then 20s) and retry with the same key.
+def _is_rate_limit(e: Exception) -> bool:
+    s = str(e).lower()
+    return (
+        "429" in str(e)
+        or "rate" in s
+        or "quota" in s
+        or "capacity" in s
+        or "overloaded" in s
+        or "ratelimit" in type(e).__name__.lower()
+        or "toomanyrequests" in type(e).__name__.lower()
+    )
 
-    Accepts a zero-arg callable so each retry gets a fresh LLM instance built
-    with the newly rotated key. Defaults to trying every key in the pool at least once.
+
+def _invoke_with_backoff(llm_factory, messages, attempts: int | None = None):
+    """Retry on any error: rotate to the next API key on every failure.
+
+    Rotates on ALL errors (not just 429s) so that auth failures, model
+    unavailability, and connection errors are all healed by trying the next key.
+    Sleeps only for confirmed rate-limit errors when the pool has a single key.
+    Defaults to trying every key in the pool at least once (min 3 attempts).
     """
     _attempts = attempts if attempts is not None else max(key_count(), 3)
-    delays = [8, 20]
+    delays = [5, 15]
     last_err = None
     for i in range(_attempts):
         try:
             return llm_factory().invoke(messages)
         except Exception as e:
             last_err = e
-            is_rate_limit = "429" in str(e) or "rate-limit" in str(e).lower()
-            if not is_rate_limit or i == _attempts - 1:
+            rl = _is_rate_limit(e)
+            print(f"[llm] attempt {i+1}/{_attempts} failed ({type(e).__name__}): {str(e)[:200]}")
+            if i == _attempts - 1:
                 raise
             rotate_key()
-            if key_count() == 1:
+            if rl and key_count() == 1:
                 time.sleep(delays[min(i, len(delays) - 1)])
     raise last_err  # pragma: no cover
 
@@ -298,13 +313,22 @@ def reasoning_node(state: AgentState) -> dict:
 
     try:
         response = _invoke_with_backoff(_make_llm, messages)
-    except Exception:
-        fallback = AIMessage(content=_RATE_LIMIT_FALLBACK)
-        fallback.additional_kwargs["degraded"] = True
-        return {
-            "messages": [fallback],
-            "step_count": state["step_count"] + 1,
-        }
+    except Exception as primary_err:
+        print(f"[reasoning] primary model exhausted: {primary_err}")
+        # Fallback: try the small fast model — no tools, just a plain reading.
+        try:
+            def _make_small_llm():
+                return get_llm(temperature=0.7, model="llama-3.1-8b-instant")
+            response = _invoke_with_backoff(_make_small_llm, messages, attempts=max(key_count(), 2))
+            print("[reasoning] fallback model succeeded")
+        except Exception as fallback_err:
+            print(f"[reasoning] fallback model also failed: {fallback_err}")
+            fallback = AIMessage(content=_RATE_LIMIT_FALLBACK)
+            fallback.additional_kwargs["degraded"] = True
+            return {
+                "messages": [fallback],
+                "step_count": state["step_count"] + 1,
+            }
 
     tool_names = [tc["name"] for tc in (getattr(response, "tool_calls", None) or [])]
 

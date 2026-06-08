@@ -33,7 +33,7 @@ def _load_keys() -> list[str]:
     for i in range(2, 20):
         k = os.getenv(f"GROQ_API_KEY_{i}", "").strip()
         if not k:
-            break
+            continue  # skip gaps; don't stop early
         if k not in keys:
             keys.append(k)
     return keys
