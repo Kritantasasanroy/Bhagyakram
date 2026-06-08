@@ -17,7 +17,7 @@ class AgentState(TypedDict):
     # add_messages handles appending new messages rather than overwriting
     messages: Annotated[list[BaseMessage], add_messages]
 
-    # birth details from the user — might be partial (no time, etc.)
+    # birth details from the user , might be partial (no time, etc.)
     birth_details: Optional[BirthDetails]
 
     # cached after the first chart computation so we don't recompute every turn
@@ -26,7 +26,7 @@ class AgentState(TypedDict):
     # router fills this in: chart_request | daily_horoscope | freeform | off_topic
     intent: str
 
-    # tracks which tools fired this turn — useful for eval assertions
+    # tracks which tools fired this turn , useful for eval assertions
     tool_calls_made: list[str]
 
     # bounded by STEP_LIMIT in nodes.py so the reason/tool loop can't run away

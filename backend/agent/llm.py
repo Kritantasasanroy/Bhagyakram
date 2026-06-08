@@ -9,7 +9,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 # Default models per provider
 _GROQ_DEFAULT = "llama-3.3-70b-versatile"
-_GROQ_EDITOR  = "llama-3.1-8b-instant"   # fast, cheap — good enough for tone edits
+_GROQ_EDITOR  = "llama-3.1-8b-instant"   # fast, cheap , good enough for tone edits
 _GEMINI_DEFAULT = "gemini-2.0-flash"
 
 

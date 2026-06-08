@@ -26,7 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-# Windows consoles default to cp1252 which can't print ✓/✗ — force UTF-8.
+# Windows consoles default to cp1252 which can't print ✓/✗ , force UTF-8.
 for _stream in (sys.stdout, sys.stderr):
     try:
         _stream.reconfigure(encoding="utf-8")
@@ -42,7 +42,7 @@ GOLDEN_SET = Path(__file__).parent / "golden_set.jsonl"
 RESULTS_DIR = Path(__file__).parent / "results"
 API_BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000"
 
-# Chart requests chain several LLM calls, each of which may wait out a 429 —
+# Chart requests chain several LLM calls, each of which may wait out a 429 ,
 # keep the timeout generous so a slow but valid request isn't cut short.
 TIMEOUT = 240
 
@@ -105,7 +105,7 @@ def call_agent(case: dict, client: httpx.Client, run_id: str) -> dict:
                     break
 
     except httpx.ConnectError:
-        error = "API not running — start with: cd backend && uvicorn api.main:app --reload"
+        error = "API not running , start with: cd backend && uvicorn api.main:app --reload"
     except httpx.HTTPStatusError as e:
         error = f"HTTP {e.response.status_code}"
     except Exception as e:
@@ -225,9 +225,9 @@ def run_case(case: dict, client: httpx.Client, run_id: str) -> dict:
         "category": case["category"],
         "description": case["description"][:60],
         "check_type": check_type,
-        "tools_called": ", ".join(run["tools_seen"]) or "—",
+        "tools_called": ", ".join(run["tools_seen"]) or ",",
         "latency_ms": run["latency_ms"],
-        "tokens": run["token_count"] or "—",
+        "tokens": run["token_count"] or ",",
         "cost_usd": 0.00,  # free-tier Gemini does not bill per request
         "judge_helpfulness": judge_scores.get("helpfulness"),
         "judge_tone": judge_scores.get("tone"),
@@ -260,8 +260,8 @@ def print_scorecard(results: list[dict]) -> None:
     for r in results:
         scores = [r[f"judge_{d}"] for d in ("helpfulness", "tone", "groundedness", "safety")]
         valid = [s for s in scores if s is not None]
-        judge_str = f"{round(sum(valid)/len(valid),1)}" if valid else "—"
-        tools = (r["tools_called"] or "—")[:26]
+        judge_str = f"{round(sum(valid)/len(valid),1)}" if valid else ","
+        tools = (r["tools_called"] or ",")[:26]
         status = "✓" if r["pass"] else "✗"
         print(col.format(
             r["id"], r["category"][:18], r["check_type"][:14], tools,
@@ -289,7 +289,7 @@ def save_results(results: list[dict]) -> Path:
 
 def main() -> None:
     run_id = datetime.now().strftime("%Y%m%d%H%M%S")
-    print(f"AstroAgent Eval  —  {API_BASE}")
+    print(f"AstroAgent Eval  ,  {API_BASE}")
     cases = load_golden_set()
     print(f"Loaded {len(cases)} cases from golden_set.jsonl  (run {run_id})\n")
 

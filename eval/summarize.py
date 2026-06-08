@@ -5,7 +5,7 @@ Summarize the latest eval CSV into the numbers EVALUATION.md needs.
     python eval/summarize.py <file.csv> # a specific run
 
 Prints overall pass rate, p50/p95 latency, avg tokens, per-category breakdown,
-judge averages, and the list of failures with reasons — everything required to
+judge averages, and the list of failures with reasons , everything required to
 fill the scorecard honestly.
 """
 from __future__ import annotations
@@ -68,7 +68,7 @@ def main() -> None:
         if vals:
             print(f"  {dim:<13} {round(statistics.mean(vals),2)}  (n={len(vals)})")
         else:
-            print(f"  {dim:<13} —  (no scores)")
+            print(f"  {dim:<13} ,  (no scores)")
 
     # failures
     fails = [r for r in rows if r["pass"] != "True"]

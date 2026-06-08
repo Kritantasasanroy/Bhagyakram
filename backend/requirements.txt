@@ -12,7 +12,7 @@ aiofiles>=23.2.1
 python-dotenv>=1.0.1
 pydantic>=2.7.0
 
-# Ephemeris — real planetary positions, not guesses
+# Ephemeris , real planetary positions, not guesses
 pyswisseph>=2.10.3.1
 
 # Geocoding + timezone resolution

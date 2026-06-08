@@ -19,9 +19,9 @@ function CosmicBackground() {
   const layers = useMemo(() => {
     const W = 2000, H = 1200;
     return {
-      deep:  starField(90,  W, H, 0.6),
-      mid:   starField(60,  W, H, 0.8),
-      front: starField(34,  W, H, 1.0),
+      deep: starField(90, W, H, 0.6),
+      mid: starField(60, W, H, 0.8),
+      front: starField(34, W, H, 1.0),
       W, H,
     };
   }, []);
@@ -56,7 +56,7 @@ function CosmicBackground() {
         animation: "breathe 8s ease-in-out infinite",
       }} />
 
-      {/* Deepest layer — barely moves */}
+      {/* Deepest layer , barely moves */}
       <div style={{ position: "absolute", inset: 0 }}>
         <div style={layerStyle(layers.deep, 1, "driftA", 240)} />
         <div style={{ ...layerStyle(layers.deep, 1, "driftA", 240), transform: "translateX(2000px)" }} />
@@ -68,7 +68,7 @@ function CosmicBackground() {
         <div style={{ ...layerStyle(layers.mid, 1.4, "driftB", 150), transform: "translateX(2000px)" }} />
       </div>
 
-      {/* Foreground — larger, twinkling, faster drift */}
+      {/* Foreground , larger, twinkling, faster drift */}
       <div style={{ position: "absolute", inset: 0, animation: "twinkle 5.5s ease-in-out infinite" }}>
         <div style={{ ...layerStyle(layers.front, 2, "driftC", 90), width: 2, height: 2 }} />
         <div style={{ ...layerStyle(layers.front, 2, "driftC", 90), width: 2, height: 2, transform: "translateX(2000px)" }} />

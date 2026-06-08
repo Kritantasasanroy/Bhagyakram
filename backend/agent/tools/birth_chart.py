@@ -7,7 +7,7 @@ import pytz
 from langchain_core.tools import tool
 
 # pyswisseph falls back to the built-in Moshier ephemeris when data files
-# aren't present — accurate enough for 1800–2400. For maximum precision,
+# aren't present , accurate enough for 1800–2400. For maximum precision,
 # download files from astro.com/swisseph and place them in backend/ephe/.
 EPHE_PATH = str(Path(__file__).parent.parent.parent / "ephe")
 
@@ -116,7 +116,7 @@ def compute_birth_chart(
                 "retrograde": pos[3] < 0,
             }
 
-        # Placidus houses — most common system in Western astrology
+        # Placidus houses , most common system in Western astrology
         cusps, ascmc = swe.houses(jd, lat, lng, b"P")
 
         houses: dict[str, dict] = {}

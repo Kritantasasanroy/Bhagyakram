@@ -13,37 +13,61 @@ function renderInline(str) {
   });
 }
 
-// ---- Full markdown renderer: headers, bullets, bold, italic ----
+// ---- Full markdown renderer: headers, bullets, numbered lists, bold, italic ----
 function MdText({ text }) {
   if (!text) return null;
   const lines = (text || "").split("\n");
   return (
     <>
       {lines.map((line, i) => {
+        // H3
         if (line.startsWith("### "))
-          return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 15.5, fontWeight: 600, color: "var(--gold)", margin: "16px 0 3px", letterSpacing: "0.01em" }}>{renderInline(line.slice(4))}</div>;
+          return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 14, fontWeight: 700, color: "var(--gold)", margin: "14px 0 2px", letterSpacing: "0.04em", textTransform: "uppercase", opacity: 0.9 }}>{renderInline(line.slice(4))}</div>;
+        // H2 , main section headers
         if (line.startsWith("## "))
-          return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 17, fontWeight: 600, color: "var(--ivory)", margin: "18px 0 4px" }}>{renderInline(line.slice(3))}</div>;
-        if (line.startsWith("# "))
-          return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 600, color: "var(--ivory)", margin: "20px 0 6px" }}>{renderInline(line.slice(2))}</div>;
-        if (/^\*\s+/.test(line) || /^-\s+/.test(line)) {
-          const content = line.replace(/^[\*\-]\s+/, "");
           return (
-            <div key={i} style={{ display: "flex", gap: 9, margin: "3px 0", paddingLeft: 2 }}>
-              <span style={{ color: "var(--gold)", flexShrink: 0, lineHeight: 1.72 }}>·</span>
-              <span>{renderInline(content)}</span>
+            <div key={i} style={{ margin: "20px 0 6px" }}>
+              <div style={{ fontFamily: "var(--serif)", fontSize: 16.5, fontWeight: 700, color: "var(--ivory)", letterSpacing: "0.01em" }}>{renderInline(line.slice(3))}</div>
+              <div style={{ height: 1, background: "linear-gradient(90deg, rgba(201,168,76,0.35) 0%, transparent 80%)", marginTop: 5 }} />
+            </div>
+          );
+        // H1
+        if (line.startsWith("# "))
+          return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 700, color: "var(--ivory)", margin: "22px 0 8px" }}>{renderInline(line.slice(2))}</div>;
+        // Horizontal rule
+        if (/^---+$/.test(line.trim()))
+          return <div key={i} style={{ height: 1, background: "var(--hairline)", margin: "14px 0" }} />;
+        // Bullet list (- item or * item, but not **bold**)
+        if (/^[-*]\s/.test(line) && !line.startsWith("**")) {
+          const content = line.replace(/^[-*]\s+/, "");
+          return (
+            <div key={i} style={{ display: "flex", gap: 10, margin: "4px 0", paddingLeft: 4 }}>
+              <span style={{ color: "var(--gold)", flexShrink: 0, lineHeight: 1.72, fontSize: 13 }}>◆</span>
+              <span style={{ lineHeight: 1.72 }}>{renderInline(content)}</span>
             </div>
           );
         }
+        // Numbered list
+        const numbered = line.match(/^(\d+)\.\s+(.+)/);
+        if (numbered) {
+          return (
+            <div key={i} style={{ display: "flex", gap: 10, margin: "4px 0", paddingLeft: 4 }}>
+              <span style={{ color: "var(--gold)", flexShrink: 0, fontVariantNumeric: "tabular-nums", fontSize: 13, lineHeight: 1.72, minWidth: 18, textAlign: "right" }}>{numbered[1]}.</span>
+              <span style={{ lineHeight: 1.72 }}>{renderInline(numbered[2])}</span>
+            </div>
+          );
+        }
+        // Blank line
         if (line.trim() === "")
-          return <div key={i} style={{ height: 7 }} />;
-        return <div key={i}>{renderInline(line)}</div>;
+          return <div key={i} style={{ height: 8 }} />;
+        // Normal paragraph line
+        return <div key={i} style={{ lineHeight: 1.72 }}>{renderInline(line)}</div>;
       })}
     </>
   );
 }
 
-// ---- Bhagyakram (assistant) message — logo beside first line ----
+// ---- Bhagyakram (assistant) message , logo beside first line ----
 function BhagyakramMessage({ text, streaming }) {
   return (
     <div style={{ display: "flex", gap: 14, maxWidth: 680, animation: "msgRise 0.3s var(--ease) both" }}>
@@ -60,7 +84,7 @@ function BhagyakramMessage({ text, streaming }) {
   );
 }
 
-// ---- User message — right-aligned violet pill ----
+// ---- User message , right-aligned violet pill ----
 function UserMessage({ text }) {
   return (
     <div style={{ display: "flex", justifyContent: "flex-end", animation: "msgRise 0.3s var(--ease) both" }}>

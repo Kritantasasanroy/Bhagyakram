@@ -58,7 +58,7 @@ function PinIcon({ pulse }) {
   );
 }
 
-// Inline field message — error (blocking), warn (amber), or neutral hint
+// Inline field message , error (blocking), warn (amber), or neutral hint
 function Hint({ tone, children }) {
   const color = tone === "error" ? "var(--error)" : tone === "warn" ? "var(--gold)" : "var(--ivory-faint)";
   return (

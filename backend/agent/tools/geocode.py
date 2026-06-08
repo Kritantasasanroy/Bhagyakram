@@ -8,11 +8,11 @@ from timezonefinder import TimezoneFinder
 _geocoder = Nominatim(user_agent="aradhna-astroagent/1.0")
 _tf = TimezoneFinder()
 
-# Country or continent level is too broad — the centroid could be hundreds of
+# Country or continent level is too broad , the centroid could be hundreds of
 # miles from the actual birth city, making house cusps meaningless.
 _TOO_BROAD = {"country", "continent"}
 
-# These are countries that are essentially a single city — no need to ask
+# These are countries that are essentially a single city , no need to ask
 # someone from Singapore "which city were you born in?"
 _CITY_STATES = {
     "singapore", "monaco", "vatican", "vatican city", "hong kong",
@@ -126,7 +126,7 @@ def geocode_place(place_name: str) -> dict:
     yet the coordinates. Well-known cities resolve from a built-in table
     instantly; everything else looks up OpenStreetMap (no API key needed).
 
-    Returns {"ambiguous": true} if the place is a whole country or continent —
+    Returns {"ambiguous": true} if the place is a whole country or continent ,
     ask the user for a specific city in that case.
     """
     key = place_name.strip().lower()
@@ -171,7 +171,7 @@ def geocode_place(place_name: str) -> dict:
             "message": (
                 f"'{place_name}' resolved to a whole {addresstype}, which is too broad "
                 "for an accurate chart. Ask the user for the specific city or town of "
-                "birth — the rising sign and houses depend on the exact location."
+                "birth , the rising sign and houses depend on the exact location."
             ),
         }
 

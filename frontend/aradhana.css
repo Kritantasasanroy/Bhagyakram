@@ -1,38 +1,49 @@
 /* ============================================================
-   Bhagyakram — AI Astrology Companion
+   Bhagyakram , AI Astrology Companion
    Design tokens + base styles + keyframe library
    ============================================================ */
 
 :root {
   /* Core palette */
-  --base:        #0B0F1A;   /* deep cosmic navy */
-  --panel:       #0F1525;   /* left panel, slightly lifted */
-  --panel-2:     #121A2E;   /* inputs / cards */
-  --violet:      #3D2B6B;   /* primary accent */
+  --base: #0B0F1A;
+  /* deep cosmic navy */
+  --panel: #0F1525;
+  /* left panel, slightly lifted */
+  --panel-2: #121A2E;
+  /* inputs / cards */
+  --violet: #3D2B6B;
+  /* primary accent */
   --violet-soft: rgba(61, 43, 107, 0.42);
-  --gold:        #C9A84C;   /* highlights, celestial */
-  --gold-soft:   rgba(201, 168, 76, 0.16);
-  --flame:       #F23602;   /* brand accent */
-  --flame-soft:  rgba(242, 54, 2, 0.16);
-  --ivory:       #F4EFE6;   /* primary text */
-  --ivory-dim:   rgba(244, 239, 230, 0.62);
+  --gold: #C9A84C;
+  /* highlights, celestial */
+  --gold-soft: rgba(201, 168, 76, 0.16);
+  --flame: #F23602;
+  /* brand accent */
+  --flame-soft: rgba(242, 54, 2, 0.16);
+  --ivory: #F4EFE6;
+  /* primary text */
+  --ivory-dim: rgba(244, 239, 230, 0.62);
   --ivory-faint: rgba(244, 239, 230, 0.34);
-  --hairline:    rgba(244, 239, 230, 0.10);
-  --hairline-2:  rgba(244, 239, 230, 0.16);
-  --error:       #D98A6A;   /* soft red-amber */
+  --hairline: rgba(244, 239, 230, 0.10);
+  --hairline-2: rgba(244, 239, 230, 0.16);
+  --error: #D98A6A;
+  /* soft red-amber */
 
   /* Type */
   --serif: "Cormorant Garamond", Georgia, serif;
-  --sans:  "DM Sans", system-ui, sans-serif;
-  --mono:  "Space Mono", ui-monospace, monospace;
+  --sans: "DM Sans", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
 
   /* Motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   height: 100%;
   background: var(--base);
@@ -43,18 +54,33 @@ html, body {
   overflow: hidden;
 }
 
-#root { height: 100%; }
+#root {
+  height: 100%;
+}
 
-::selection { background: var(--gold-soft); color: var(--ivory); }
+::selection {
+  background: var(--gold-soft);
+  color: var(--ivory);
+}
 
 /* Slim, dark scrollbars */
-*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
 *::-webkit-scrollbar-thumb {
   background: rgba(244, 239, 230, 0.10);
   border-radius: 99px;
 }
-*::-webkit-scrollbar-thumb:hover { background: rgba(244, 239, 230, 0.18); }
-*::-webkit-scrollbar-track { background: transparent; }
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 239, 230, 0.18);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 /* ============================================================
    KEYFRAMES
@@ -62,135 +88,295 @@ html, body {
 
 /* logo: whole logo blooms open from center */
 @keyframes bloomIn {
-  from { transform: scale(0.55); opacity: 0; }
-  60%  { opacity: 1; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* logo: orbit ring slow rotation */
 @keyframes orbitSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* header logo thinking spin (slow) */
 @keyframes lotusThink {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* gold shimmer sweep across text, once */
 @keyframes shimmerSweep {
-  0%   { background-position: -160% 0; }
-  100% { background-position: 260% 0; }
+  0% {
+    background-position: -160% 0;
+  }
+
+  100% {
+    background-position: 260% 0;
+  }
 }
 
 /* generic fade-in-up for staggered logo parts */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* message entrance */
 @keyframes msgRise {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* star field drift layers */
-@keyframes driftA { to { transform: translate3d(-120px, 40px, 0); } }
-@keyframes driftB { to { transform: translate3d(-260px, -90px, 0); } }
-@keyframes driftC { to { transform: translate3d(-420px, 60px, 0); } }
+@keyframes driftA {
+  to {
+    transform: translate3d(-120px, 40px, 0);
+  }
+}
+
+@keyframes driftB {
+  to {
+    transform: translate3d(-260px, -90px, 0);
+  }
+}
+
+@keyframes driftC {
+  to {
+    transform: translate3d(-420px, 60px, 0);
+  }
+}
 
 /* twinkle pulse for foreground stars */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.55; }
-  50%      { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* nebula breathing */
 @keyframes breathe {
-  0%, 100% { opacity: 0.28; transform: scale(1); }
-  50%      { opacity: 0.5;  transform: scale(1.08); }
+
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.08);
+  }
 }
 
 /* tool chip glow pulse */
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 0 1px var(--hairline-2), 0 0 24px rgba(201,168,76,0.06); }
-  50%      { box-shadow: 0 0 0 1px rgba(201,168,76,0.30), 0 0 36px rgba(201,168,76,0.18); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px var(--hairline-2), 0 0 24px rgba(201, 168, 76, 0.06);
+  }
+
+  50% {
+    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.30), 0 0 36px rgba(201, 168, 76, 0.18);
+  }
 }
 
 /* three dots */
 @keyframes dotBounce {
-  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
-  40%           { opacity: 1;    transform: translateY(-3px); }
+
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
 }
 
 /* submit orbit spinner */
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* location pin pulse, once */
 @keyframes pinPulse {
-  0%   { transform: scale(1); }
-  35%  { transform: scale(1.35); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.35);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* button shimmer on hover */
 @keyframes btnShimmer {
-  to { background-position: 200% 0; }
+  to {
+    background-position: 200% 0;
+  }
 }
 
 /* toast slide down */
 @keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, -14px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* page transition */
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 @keyframes pageFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* hero float */
 @keyframes heroFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 /* gradient slide */
 @keyframes gradientSlide {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* glow ring pulse for logo */
 @keyframes glowRing {
-  0%, 100% { box-shadow: 0 0 30px rgba(201,168,76,0.15), 0 0 60px rgba(201,168,76,0.08); }
-  50%      { box-shadow: 0 0 50px rgba(201,168,76,0.30), 0 0 100px rgba(201,168,76,0.15); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.15), 0 0 60px rgba(201, 168, 76, 0.08);
+  }
+
+  50% {
+    box-shadow: 0 0 50px rgba(201, 168, 76, 0.30), 0 0 100px rgba(201, 168, 76, 0.15);
+  }
 }
 
 /* card reveal */
 @keyframes cardReveal {
-  from { opacity: 0; transform: translateY(30px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* count up shine */
 @keyframes countShine {
-  0%   { opacity: 0; transform: scale(0.8); }
-  60%  { opacity: 1; transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* subtle pulse for tech icons */
 @keyframes techPulse {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.08); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 /* ============================================================
@@ -213,7 +399,9 @@ html, body {
 }
 
 @media (max-width: 860px) {
-  .home-section { padding: 50px 20px; }
+  .home-section {
+    padding: 50px 20px;
+  }
 }
 
 .section-title {
@@ -265,7 +453,9 @@ html, body {
 .feature-card::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
   opacity: 0;
@@ -278,7 +468,9 @@ html, body {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 0 0 30px rgba(201, 168, 76, 0.06);
 }
 
-.feature-card:hover::before { opacity: 1; }
+.feature-card:hover::before {
+  opacity: 1;
+}
 
 .feature-card-icon {
   width: 48px;
@@ -511,15 +703,32 @@ html, body {
     flex-direction: column;
     text-align: center;
   }
-  .founder-skills { justify-content: center; }
-  .section-title { font-size: 28px; }
-  .auth-card { padding: 30px 22px; }
+
+  .founder-skills {
+    justify-content: center;
+  }
+
+  .section-title {
+    font-size: 28px;
+  }
+
+  .auth-card {
+    padding: 30px 22px;
+  }
 }
 
 @media (max-width: 400px) {
-  .section-title { font-size: 24px; }
-  .feature-grid { grid-template-columns: 1fr; }
-  .privacy-grid { grid-template-columns: 1fr; }
+  .section-title {
+    font-size: 24px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Footer */
@@ -537,8 +746,13 @@ html, body {
   transition: color 0.2s var(--ease);
 }
 
-.home-footer a:hover { color: var(--ivory); }
+.home-footer a:hover {
+  color: var(--ivory);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

@@ -281,7 +281,7 @@ function FeaturesSection() {
         <div className="section-title">Powerful Features</div>
         <p className="section-subtitle">
           Every feature is built for real utility, not just demonstration. From chart computation 
-          to agent safety — each layer is production-grade.
+          to agent safety, each layer is production-grade.
         </p>
       </Reveal>
       <div className="feature-grid">
@@ -314,6 +314,8 @@ function TechSection() {
     { icon: "globe", name: "React", role: "Frontend UI" },
     { icon: "lock", name: "Neon DB", role: "Auth & Storage" },
     { icon: "map", name: "Nominatim", role: "Geocoding" },
+    { icon: "server", name: "Hugging Face Spaces", role: "Hosting (16GB RAM, Free)" },
+    { icon: "shield", name: "Cloudflare", role: "CDN + Custom Domain" },
   ];
 
   return (
@@ -321,8 +323,8 @@ function TechSection() {
       <Reveal>
         <div className="section-title">Technology Stack</div>
         <p className="section-subtitle">
-          Built entirely on free, open-source tools. Primary inference runs on Groq's free
-          tier (llama-3.3-70b) — no credit card required.
+          Built entirely on free, open-source tools. Hosted on Hugging Face Spaces (16GB RAM, 2 vCPUs),
+          served via Cloudflare, inference on Groq. No credit card required.
         </p>
       </Reveal>
       <div className="tech-grid">

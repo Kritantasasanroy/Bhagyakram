@@ -1,6 +1,6 @@
 /* global React */
 
-// Bhagyakram logo — uses the logo.png image instead of SVG lotus
+// Bhagyakram logo , uses the logo.png image instead of SVG lotus
 // The image-based mark supports sizing, spinning (thinking), and glow effects.
 
 function LogoMark({ size = 24, spin = false, glow = false }) {
@@ -35,7 +35,7 @@ function BhagyakramLogo({ scale = 1, withText = true, animate = true, tagline = 
         position: "relative", width: D, height: D,
         animation: animate ? "fadeUp 0.9s var(--ease) both" : "none",
       }}>
-        {/* Orbit ring — thin circle that slowly rotates, carrying a gold planet */}
+        {/* Orbit ring , thin circle that slowly rotates, carrying a gold planet */}
         <svg
           width={D} height={D} viewBox="0 0 100 100"
           style={{

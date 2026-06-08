@@ -57,10 +57,10 @@ def get_daily_transits(date: str, natal_chart: dict = None) -> dict:
     between today's sky and the user's natal planets. Returns the tightest
     transits sorted by orb so the most significant ones come first.
 
-    date: YYYY-MM-DD — usually today's date
+    date: YYYY-MM-DD , usually today's date
     natal_chart: the full output from compute_birth_chart. If omitted or
                  incomplete, the current sky positions are returned without
-                 aspect analysis — still useful for retrograde and sign questions.
+                 aspect analysis , still useful for retrograde and sign questions.
     """
     try:
         import swisseph as swe  # noqa: F401

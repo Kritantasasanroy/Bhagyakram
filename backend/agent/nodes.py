@@ -72,7 +72,7 @@ def _has_usable_birth_details(bd) -> bool:
 
 # Phrases that signal a request for the user's OWN reading ("read ME"), as opposed
 # to a general astrology question ("what is a rising sign?"). The router's intent
-# is too coarse to use here — it tags any mention of "sign"/"house" as chart_request,
+# is too coarse to use here , it tags any mention of "sign"/"house" as chart_request,
 # which would wrongly trip on definitional questions. We require a personal anchor.
 _PERSONAL_CHART_RE = re.compile(
     r"\bmy\b[^.?!]{0,40}\b("
@@ -86,7 +86,7 @@ _PERSONAL_CHART_RE = re.compile(
 )
 
 # If the message itself carries birth info (a year, a date, or "born …"), the agent
-# can resolve it with the geocode/compute tools — so don't short-circuit on it.
+# can resolve it with the geocode/compute tools , so don't short-circuit on it.
 _BIRTH_INFO_RE = re.compile(
     r"\b(18|19|20)\d{2}\b"
     r"|\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b"
@@ -107,7 +107,7 @@ def _needs_birth_data(state: AgentState) -> bool:
 
 
 _NEED_DETAILS = (
-    "I'd love to read your chart — but I don't have your birth details yet, so I "
+    "I'd love to read your chart, but I don't have your birth details yet, so I "
     "can't see your actual sky. Share your date of birth and the place you were "
     "born (and the time, if you know it) in the birth details form, and I'll "
     "compute your real chart and answer this properly. Without them I'd only be "
@@ -128,7 +128,7 @@ _DISCLAIMER = (
 )
 
 _RATE_LIMIT_FALLBACK = (
-    "I'm sorry — the stars are a little crowded right now and I couldn't finish "
+    "I'm sorry, the stars are a little crowded right now and I couldn't finish "
     "that reading. This is usually a brief rate limit on the free model. Please "
     "give it a few seconds and ask me again."
 )
@@ -143,7 +143,7 @@ _FLAT_REFUSAL_PHRASES = [
 ]
 
 _INJECTION_REPLY = (
-    "That framing isn't one I can step into — I read the sky as it is, for reflection "
+    "That framing isn't one I can step into , I read the sky as it is, for reflection "
     "and pattern, not for guarantees. If you'd like to look at what your birth chart "
     "actually says about finances, opportunity, or the year ahead, I'm genuinely here "
     "for that kind of reading."
@@ -159,7 +159,7 @@ _DEATH_GATE_RE = re.compile(
 _EDITOR_SYSTEM = """\
 You are reviewing a response you wrote as Bhagyakram AI, a warm astrology companion. \
 If any part sounds cold, overly definitive about uncertain outcomes, or potentially \
-alarming, gently rephrase just that part — keep all chart facts, planetary positions, \
+alarming, gently rephrase just that part , keep all chart facts, planetary positions, \
 degree values, and specific insights exactly as they are. If the tone is already warm \
 and grounded, return the response unchanged. Return only the response text, no commentary.\
 """
@@ -171,7 +171,7 @@ def router_node(state: AgentState) -> dict:
     )
     text = last_human.content.lower() if last_human else ""
 
-    # off-topic is checked first — "what's the weather today?" contains "today"
+    # off-topic is checked first , "what's the weather today?" contains "today"
     # but should not be classified as a horoscope request
     if any(w in text for w in ["recipe", "weather", "sports", "news", "movie", "code", "program"]):
         intent = "off_topic"
@@ -205,14 +205,14 @@ def sensitivity_gate_node(state: AgentState) -> dict:
             "question": (
                 "Your question touches on endings and timing. Before I read your chart "
                 "around this, I want to be clear: what I can offer is reflection on themes "
-                "of transformation and cycles — not literal predictions of when. "
+                "of transformation and cycles , not literal predictions of when. "
                 "Shall I read it in that spirit?"
             ),
         })
         if not decision.get("confirmed", True):
             return {"messages": [AIMessage(
                 content=(
-                    "Of course — no pressure at all. I'm here whenever you're ready. "
+                    "Of course , no pressure at all. I'm here whenever you're ready. "
                     "You can ask about your chart, today's transits, or any other part "
                     "of your sky."
                 )
@@ -229,14 +229,14 @@ def after_gate(state: AgentState) -> Literal["reasoning", "safety"]:
 
 
 def _invoke_with_backoff(llm, messages, attempts: int = 3):
-    """Retry on rate-limit 429s with a short backoff: 2s, then 5s.
+    """Retry on rate-limit 429s with backoff: 8s then 20s.
 
-    Kept deliberately short. A long exponential backoff (the old 4→64s ladder)
-    meant a rate-limited turn would hang for up to two minutes before the user
-    saw anything — which felt exactly like the app being frozen. Failing fast and
-    inviting them to ask again is a better experience on a free, bursty quota.
+    TPM (tokens-per-minute) limits need longer waits than RPM limits -- the window
+    resets after ~60s but a partial wait is usually enough since we only need the
+    tail end of the window to clear. 8s + 20s covers typical bursty TPM exhaustion
+    without making a rate-limited turn feel frozen.
     """
-    delays = [2, 5]
+    delays = [8, 20]
     last_err = None
     for i in range(attempts):
         try:
@@ -252,8 +252,8 @@ def _invoke_with_backoff(llm, messages, attempts: int = 3):
 
 def reasoning_node(state: AgentState) -> dict:
     # Hard guard: a personal reading needs real birth data. If we have neither a
-    # computed chart nor usable birth details — and the user didn't supply any in
-    # the message — never let the model invent a chart. Ask for the details instead.
+    # computed chart nor usable birth details , and the user didn't supply any in
+    # the message , never let the model invent a chart. Ask for the details instead.
     if (
         not state.get("birth_chart")
         and not _has_usable_birth_details(state.get("birth_details"))
@@ -272,14 +272,14 @@ def reasoning_node(state: AgentState) -> dict:
     )
 
     # Bind only the tools that still have budget. Once geocoding, the chart,
-    # transits, and one knowledge lookup are spent — or we're at the last allowed
-    # step — we call with NO tools bound, which forces the model to stop gathering
+    # transits, and one knowledge lookup are spent , or we're at the last allowed
+    # step , we call with NO tools bound, which forces the model to stop gathering
     # and actually write the reading instead of looping into a blank response.
     used = state.get("tool_calls_made", [])
     allowed = _allowed_tools(used)
 
     # If the chart is already known (pre-computed from the form or cached from an
-    # earlier turn), there's nothing to geocode or recompute — drop those tools so
+    # earlier turn), there's nothing to geocode or recompute , drop those tools so
     # the model goes straight to interpreting instead of burning a request on them.
     if state.get("birth_chart"):
         allowed = [t for t in allowed if t.name not in ("geocode_place", "compute_birth_chart")]
@@ -320,7 +320,7 @@ def reasoning_node(state: AgentState) -> dict:
 def editor_node(state: AgentState) -> dict:
     """Second-agent handoff: a light editor pass that softens tone on full readings.
 
-    Only fires for chart_request and freeform answers longer than 500 characters —
+    Only fires for chart_request and freeform answers longer than 500 characters ,
     short safety refusals and off-topic redirects pass straight through. The editor
     preserves every chart fact and planetary value; it only rewrites phrasing that
     reads cold or overly certain.
@@ -341,7 +341,7 @@ def editor_node(state: AgentState) -> dict:
     if not isinstance(content, str) or len(content) < 500:
         return {}
 
-    # Use the fast 8B model for the editor — tone edits don't need the big model.
+    # Use the fast 8B model for the editor , tone edits don't need the big model.
     llm = get_llm(temperature=0.2, model="llama-3.1-8b-instant").with_config({"tags": ["editor"]})
     messages = [SystemMessage(content=_EDITOR_SYSTEM), HumanMessage(content=content)]
     try:
@@ -359,7 +359,7 @@ def safety_node(state: AgentState) -> dict:
     if state.get("intent") == "off_topic":
         reply = AIMessage(
             content=(
-                "That's a bit outside my world — I'm here as your astrology companion. "
+                "That's a bit outside my world , I'm here as your astrology companion. "
                 "If you'd like to explore your birth chart, what the transits are doing, "
                 "or what the planets might be saying about any part of your life, I'm all yours."
             )
@@ -374,11 +374,11 @@ def safety_node(state: AgentState) -> dict:
 
     # Last-resort guard: if the reasoning loop ended on a message with no prose
     # (e.g. an unresolved tool call after the step limit), never show a blank
-    # bubble — give the person a warm, actionable nudge instead.
+    # bubble , give the person a warm, actionable nudge instead.
     if not content.strip():
         return {"messages": [AIMessage(content=(
             "I gathered your chart but ran out of room to finish the reading in one pass. "
-            "Ask me once more — about your career, a specific planet, or today's transits — "
+            "Ask me once more , about your career, a specific planet, or today's transits , "
             "and I'll lay it out for you."
         ))]}
 

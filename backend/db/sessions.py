@@ -125,7 +125,7 @@ def delete_session(session_id: str) -> None:
 
 
 def get_session_meta(session_id: str) -> Optional[dict]:
-    """Lightweight check — returns metadata without deserializing messages."""
+    """Lightweight check , returns metadata without deserializing messages."""
     with _connect() as conn:
         row = conn.execute(
             "SELECT session_id, birth_details, birth_chart, created_at, updated_at FROM sessions WHERE session_id = ?",

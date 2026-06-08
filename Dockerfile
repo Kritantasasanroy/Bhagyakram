@@ -18,7 +18,7 @@ RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTr
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 
-# logo.png is a binary excluded from git — download from a pinned GitHub commit
+# logo.png is a binary excluded from git , download from a pinned GitHub commit
 RUN curl -fsSL "https://raw.githubusercontent.com/Kritantasasanroy/Bhagyakram/2c5aa7b/frontend/logo.png" \
     -o /app/frontend/logo.png
 

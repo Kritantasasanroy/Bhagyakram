@@ -100,7 +100,7 @@ function ChatApp({ userEmail, onSignOut }) {
           turnCount.current = data.messages.filter(m => m.role === "user").length;
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const clearChat = () => {
@@ -112,8 +112,8 @@ function ChatApp({ userEmail, onSignOut }) {
     setStreamingId(null);
     hasRead.current = false;
     turnCount.current = 0;
-    // Delete server session in background — UI doesn't wait for this
-    fetch(`/session/${sessionId}`, { method: "DELETE", headers: authHeaders() }).catch(() => {});
+    // Delete server session in background , UI doesn't wait for this
+    fetch(`/session/${sessionId}`, { method: "DELETE", headers: authHeaders() }).catch(() => { });
   };
 
 
@@ -132,7 +132,7 @@ function ChatApp({ userEmail, onSignOut }) {
       { message: text, session_id: sessionId, birth_details: { date: birth.date, time: birth.time, place: birth.place }, firstTurn },
       {
         onToolStart: (label) => setTool({ label, leaving: false }),
-        onToolEnd: () => {},
+        onToolEnd: () => { },
         onToken: (tk) => {
           setTool(null);
           setStreamingId(botId);
@@ -149,7 +149,7 @@ function ChatApp({ userEmail, onSignOut }) {
           if (turnCount.current >= AUTO_CLEAR_TURNS) {
             setTimeout(() => {
               clearChat();
-              setInfoMsg("Chat cleared after 20 exchanges — starting fresh.");
+              setInfoMsg("Chat cleared after 20 exchanges. Starting fresh.");
             }, 1200);
           }
         },
@@ -186,7 +186,7 @@ function ChatApp({ userEmail, onSignOut }) {
       { thread_id, session_id, confirmed, birth_details: { date: birth.date, time: birth.time, place: birth.place } },
       {
         onToolStart: (label) => setTool({ label, leaving: false }),
-        onToolEnd: () => {},
+        onToolEnd: () => { },
         onToken: (tk) => {
           setTool(null);
           setStreamingId(botId);
@@ -233,7 +233,7 @@ function ChatApp({ userEmail, onSignOut }) {
         </aside>
       )}
 
-      {/* Right panel — chat */}
+      {/* Right panel , chat */}
       <main style={{
         position: "relative", zIndex: 2, height: "100%",
         flex: "1 1 0%", minWidth: 0,

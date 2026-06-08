@@ -76,7 +76,7 @@ class ResumeRequest(BaseModel):
 
 
 _EMPTY_GREETING = (
-    "Hello, I'm Bhagyakram AI — your astrology companion. Whenever you're ready, share "
+    "Hello, I'm Bhagyakram AI , your astrology companion. Whenever you're ready, share "
     "your birth date, time, and place, and ask me anything: your chart, the energy "
     "of today, your rising sign. What would you like to explore?"
 )
@@ -138,7 +138,7 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
             cached_chart = precomputed_chart
 
     # The pre-compute genuinely runs geocode_place and compute_birth_chart, so surface
-    # them as tool events — the UI shows accurate activity and the eval still sees the
+    # them as tool events , the UI shows accurate activity and the eval still sees the
     # tools it expects. If pre-compute didn't fire (missing/ambiguous details), the
     # agent falls back to calling these tools itself and emits the real events.
     if precomputed_chart:
@@ -199,7 +199,7 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
         print(f"[stream_agent] graph error: {e}")
         warm = (
             "The stars are a little crowded right now and I couldn't finish that "
-            "reading — it's usually a brief rate limit on the free model. Give it "
+            "reading , it's usually a brief rate limit on the free model. Give it "
             "a few seconds and ask me again."
         )
         # If nothing has streamed yet, deliver the note as a normal in-chat message

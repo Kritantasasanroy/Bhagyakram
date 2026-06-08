@@ -57,7 +57,7 @@ def warmup() -> None:
     """Load the embedding model and build the Chroma index ahead of time.
 
     The very first knowledge_lookup otherwise pays a one-time ~15-20s cost to load
-    the sentence-transformer weights and index the notes — which lands on an
+    the sentence-transformer weights and index the notes , which lands on an
     unlucky user's first question. Calling this at server startup moves that cost
     off the request path so every real lookup is fast.
     """
