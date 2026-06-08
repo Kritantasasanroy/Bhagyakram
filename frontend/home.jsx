@@ -154,8 +154,8 @@ function HeroSection({ onGetStarted }) {
         color: "var(--ivory-dim)",
         animation: "fadeUp 0.9s var(--ease) 1.6s both",
       }}>
-        A conversational AI astrology companion that computes real natal charts using 
-        Swiss Ephemeris data, reasons through a multi-agent LangGraph pipeline, and 
+        A conversational AI astrology companion that computes real natal charts using
+        Swiss Ephemeris data, reasons through a multi-agent LangGraph pipeline, and
         responds with warmth and depth.
       </p>
 
@@ -179,7 +179,7 @@ function HeroSection({ onGetStarted }) {
           Start Your Reading ✦
         </button>
         <button
-          onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
           style={{
             background: "rgba(244,239,230,0.06)", border: "1px solid var(--hairline-2)",
             borderRadius: 13, padding: "15px 28px",
@@ -189,7 +189,7 @@ function HeroSection({ onGetStarted }) {
           onMouseEnter={(e) => { e.target.style.borderColor = "rgba(201,168,76,0.4)"; e.target.style.color = "var(--ivory)"; }}
           onMouseLeave={(e) => { e.target.style.borderColor = "var(--hairline-2)"; e.target.style.color = "var(--ivory-dim)"; }}
         >
-          Explore Features
+          How it works
         </button>
       </div>
 
@@ -226,6 +226,153 @@ function HeroSection({ onGetStarted }) {
           <circle cx="10" cy="10" r="2.5" fill="var(--gold)" style={{ animation: "heroFloat 1.5s ease-in-out infinite" }} />
         </svg>
       </div>
+    </section>
+  );
+}
+
+// ---- Sample reading preview (NEW) ----
+function SampleSection() {
+  const messages = [
+    {
+      role: "user",
+      text: "What does my rising sign say about how people see me?",
+    },
+    {
+      role: "bot",
+      text: "With **Scorpio Rising**, the first thing people notice about you isn't what you say — it's the intensity behind your eyes. You carry a quiet authority that makes others feel truly seen, which can be magnetic and a little unnerving in equal measure.\n\nYour Ascendant at **14°** sits close to the fixed star Zuben Elgenubi, historically associated with social reform and karmic purpose. People sense early on that you're not here for small talk.",
+    },
+    {
+      role: "user",
+      text: "How does that interact with my Gemini Sun?",
+    },
+    {
+      role: "bot",
+      text: "That's one of the most interesting tensions in your chart. Your **Gemini Sun in the 8th house** wants to explore, question, and scatter light across ideas — but Scorpio Rising filters everything through depth before it reaches the surface.\n\nThe result: people meet your intensity first, then slowly discover the playful, curious mind underneath. You reveal yourself in layers, rarely all at once.",
+    },
+  ];
+
+  return (
+    <section className="home-section">
+      <Reveal>
+        <div className="section-title">What a Reading Looks Like</div>
+        <p className="section-subtitle">
+          Not a generic horoscope — a real conversation grounded in your actual chart. Ask follow-up questions, explore any planet or house, go as deep as you want.
+        </p>
+      </Reveal>
+      <Reveal delay={150}>
+        <div style={{
+          maxWidth: 660, margin: "0 auto",
+          background: "rgba(10,15,28,0.72)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid var(--hairline-2)", borderRadius: 20,
+          padding: "24px 20px", display: "flex", flexDirection: "column", gap: 18,
+        }}>
+          {messages.map((m, i) => (
+            <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+              {m.role === "bot" && (
+                <div style={{ flexShrink: 0, marginRight: 10, marginTop: 2 }}>
+                  <LogoMark size={18} glow />
+                </div>
+              )}
+              <div style={{
+                maxWidth: "82%",
+                background: m.role === "user" ? "var(--violet-soft)" : "transparent",
+                border: m.role === "user" ? "1px solid rgba(124,98,196,0.28)" : "none",
+                borderRadius: m.role === "user" ? "16px 16px 4px 16px" : 0,
+                padding: m.role === "user" ? "10px 14px" : 0,
+                fontSize: 14, lineHeight: 1.72, color: "var(--ivory)", fontFamily: "var(--sans)",
+              }}>
+                {m.text.split(/(\*\*[^*]+\*\*)/).map((part, j) =>
+                  part.startsWith("**") && part.endsWith("**")
+                    ? <strong key={j} style={{ color: "var(--gold)", fontWeight: 600 }}>{part.slice(2, -2)}</strong>
+                    : part.split("\n").map((line, k, arr) =>
+                        line ? <span key={k}>{line}{k < arr.length - 1 && <br />}</span> : <br key={k} />
+                      )
+                )}
+              </div>
+            </div>
+          ))}
+          <div style={{
+            marginTop: 4, padding: "10px 14px",
+            background: "rgba(244,239,230,0.03)", border: "1px solid var(--hairline)",
+            borderRadius: 12, fontSize: 13, color: "var(--ivory-faint)",
+            fontFamily: "var(--mono)", letterSpacing: "0.02em", textAlign: "center",
+          }}>
+            Your actual chart · Ask anything →
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+// ---- How it works (NEW) ----
+function HowItWorksSection({ onGetStarted }) {
+  const steps = [
+    {
+      num: "01",
+      title: "Enter your birth details",
+      desc: "Date, time, and place of birth. Time matters — it pins your rising sign and house cusps.",
+    },
+    {
+      num: "02",
+      title: "Your chart is computed",
+      desc: "Real planetary positions are calculated via Swiss Ephemeris — accurate to the minute. No approximations, no lookup tables.",
+    },
+    {
+      num: "03",
+      title: "Ask anything",
+      desc: "Career, relationships, today's transits, a specific planet — the AI reads your actual chart and answers in plain language. Ask follow-ups naturally.",
+    },
+  ];
+
+  return (
+    <section id="how-it-works" className="home-section">
+      <Reveal>
+        <div className="section-title">How It Works</div>
+        <p className="section-subtitle">Three steps. No prior astrology knowledge needed.</p>
+      </Reveal>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: 24, maxWidth: 820, margin: "0 auto",
+      }}>
+        {steps.map((s, i) => (
+          <Reveal key={i} delay={i * 100}>
+            <div style={{
+              background: "rgba(15,21,37,0.55)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid var(--hairline-2)", borderRadius: 18,
+              padding: "28px 24px", height: "100%", boxSizing: "border-box",
+              transition: "border-color 0.3s var(--ease)",
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)"}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--hairline-2)"}
+            >
+              <div style={{
+                fontFamily: "var(--mono)", fontSize: 36, fontWeight: 700,
+                color: "rgba(201,168,76,0.14)", lineHeight: 1, marginBottom: 16,
+              }}>{s.num}</div>
+              <div style={{ fontFamily: "var(--serif)", fontSize: 16, color: "var(--ivory)", marginBottom: 10 }}>
+                {s.title}
+              </div>
+              <div style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ivory-dim)" }}>{s.desc}</div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+      <Reveal delay={350}>
+        <div style={{ textAlign: "center", marginTop: 36 }}>
+          <button onClick={onGetStarted} style={{
+            background: "linear-gradient(135deg, #E4C766, #C9A84C)",
+            border: "none", borderRadius: 13, padding: "14px 30px",
+            color: "#1a1408", fontFamily: "var(--sans)", fontWeight: 600, fontSize: 15,
+            cursor: "pointer", transition: "box-shadow 0.3s var(--ease)",
+          }}
+            onMouseEnter={(e) => { e.target.style.boxShadow = "0 10px 36px rgba(201,168,76,0.3)"; }}
+            onMouseLeave={(e) => { e.target.style.boxShadow = "none"; }}>
+            Start Your Reading ✦
+          </button>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -280,7 +427,7 @@ function FeaturesSection() {
       <Reveal>
         <div className="section-title">Powerful Features</div>
         <p className="section-subtitle">
-          Every feature is built for real utility, not just demonstration. From chart computation 
+          Every feature is built for real utility, not just demonstration. From chart computation
           to agent safety, each layer is production-grade.
         </p>
       </Reveal>
@@ -349,7 +496,7 @@ function ArchitectureSection() {
       <Reveal>
         <div className="section-title">Agent Architecture</div>
         <p className="section-subtitle">
-          A LangGraph stateful agent with 7 specialized nodes, each with a clear responsibility. 
+          A LangGraph stateful agent with 7 specialized nodes, each with a clear responsibility.
           The graph loops through reasoning and tool calls until it has what it needs.
         </p>
       </Reveal>
@@ -446,14 +593,14 @@ function FounderSection() {
             <h3>Kritanta Sasan Roy</h3>
             <div className="founder-role">Founder & Developer | Bhagyakram AI</div>
             <p className="founder-bio">
-              An AI/ML engineer with deep expertise in building production-grade LLM applications. 
-              Experienced in architecting multi-agent systems using <strong style={{color:"var(--ivory)"}}>LangGraph</strong> and <strong style={{color:"var(--ivory)"}}>LangChain</strong>, 
-              designing <strong style={{color:"var(--ivory)"}}>RAG pipelines</strong> for knowledge-grounded reasoning, 
+              An AI/ML engineer with deep expertise in building production-grade LLM applications.
+              Experienced in architecting multi-agent systems using <strong style={{color:"var(--ivory)"}}>LangGraph</strong> and <strong style={{color:"var(--ivory)"}}>LangChain</strong>,
+              designing <strong style={{color:"var(--ivory)"}}>RAG pipelines</strong> for knowledge-grounded reasoning,
               and fine-tuning large language models for domain-specific tasks.
             </p>
             <p className="founder-bio" style={{ marginTop: 0 }}>
-              Bhagyakram represents the convergence of ancient astrological wisdom with modern AI engineering: 
-              real planetary computation, agentic reasoning, and thoughtful human-in-the-loop design, 
+              Bhagyakram represents the convergence of ancient astrological wisdom with modern AI engineering:
+              real planetary computation, agentic reasoning, and thoughtful human-in-the-loop design,
               all running on a zero-cost open-source stack.
             </p>
 
@@ -478,8 +625,8 @@ function FounderSection() {
                   textDecoration: "none",
                   transition: "color 0.2s var(--ease)",
                 }}
-                onMouseEnter={(e) => e.target.style.color = "var(--ivory)"}
-                onMouseLeave={(e) => e.target.style.color = "var(--gold)"}
+                onMouseEnter={(e) => e.currentTarget.style.color = "var(--ivory)"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "var(--gold)"}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -508,20 +655,20 @@ function HomeFooter() {
       <p style={{ margin: 0, fontSize: 12, color: "rgba(244,239,230,0.25)" }}>
         Powered by LangGraph · LangChain · Groq · Swiss Ephemeris · Hugging Face Spaces
       </p>
-      
+
       <div style={{
         marginTop: 40,
         paddingTop: 30,
         borderTop: "1px solid rgba(244,239,230,0.06)",
         textAlign: "center"
       }}>
-        <p style={{ 
-          margin: "0 auto", 
-          fontSize: 11, 
-          color: "rgba(244, 239, 230, 0.4)", 
-          maxWidth: 680, 
-          lineHeight: 1.6, 
-          fontStyle: "italic" 
+        <p style={{
+          margin: "0 auto",
+          fontSize: 11,
+          color: "rgba(244, 239, 230, 0.4)",
+          maxWidth: 680,
+          lineHeight: 1.6,
+          fontStyle: "italic"
         }}>
           <strong>AI Disclaimer:</strong> Bhagyakram is an AI-powered conversational agent. While it relies on real astronomical data, ephemeris libraries, and curated astrological texts, its interpretations are generated by AI. It cannot be fully trusted for absolute accuracy, and should not replace professional medical, legal, or financial advice. Astrology offers reflection, not fate.
         </p>
@@ -538,6 +685,8 @@ function HomePage({ onGetStarted }) {
       <div className="bhagyakram-home" style={{ position: "relative", zIndex: 1 }}>
         <HomeNav onGetStarted={onGetStarted} />
         <HeroSection onGetStarted={onGetStarted} />
+        <SampleSection />
+        <HowItWorksSection onGetStarted={onGetStarted} />
         <FeaturesSection />
         <ArchitectureSection />
         <TechSection />
