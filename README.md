@@ -12,7 +12,7 @@ pinned: false
 
 A conversational astrology companion. You share your birth details, it computes your actual natal chart using real planetary data, and then you can ask it anything , your career, relationships, what the energy looks like today, your Saturn return. It reasons in steps, calls tools to get real data, and responds with warmth.
 
-Everything runs on free tools. The only key you need is a free Google AI Studio (Gemini) API key , no credit card.
+Everything runs on free tools. The only key you need is a free Groq API key , no credit card.
 
 ---
 
@@ -67,7 +67,7 @@ START → router → sensitivity_gate → reasoning ──→ tools → cache_ch
 
 | Component | Tool | Cost |
 |---|---|---|
-| LLM | Google Gemini , `gemini-flash-lite-latest` via Google AI Studio | Free |
+| LLM | Groq , `llama-3.3-70b-versatile` via Groq API | Free |
 | Ephemeris | pyswisseph (Swiss Ephemeris) | Free / open source |
 | Geocoding | Nominatim via geopy (OpenStreetMap) with local city cache | Free |
 | Embeddings | sentence-transformers `all-MiniLM-L6-v2`, runs locally | Free |
@@ -97,7 +97,7 @@ backend/
     state.py      , AgentState, BirthDetails types
     graph.py      , LangGraph graph (7 nodes) + MemorySaver checkpointer
     nodes.py      , router, sensitivity_gate, reasoning, editor, safety, helper fns
-    llm.py        , Gemini client (single place to change the model)
+    llm.py        , Groq client (single place to change the model)
     prompts.py    , system prompt: tone, tool instructions, injection handling
     tools/
       geocode.py      , geocode_place() with 80+ city cache
@@ -127,7 +127,7 @@ eval/
 
 ## Setup
 
-You need Python 3.11+. Get a free Gemini API key at https://aistudio.google.com , no credit card needed.
+You need Python 3.11+. Get a free Groq API key at https://console.groq.com , no credit card needed.
 
 ```bash
 cd backend
@@ -142,7 +142,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# open .env and paste your GEMINI_API_KEY
+# open .env and paste your GROQ_API_KEY
 ```
 
 **Ephemeris files:** pyswisseph falls back to the built-in Moshier ephemeris (good for 1800–2400) without external data files. For higher precision download the files from https://www.astro.com/swisseph/ and put them in `backend/ephe/`.
