@@ -55,6 +55,10 @@ async function drainSSE(url, body, h, signal) {
         h.onToken(evt.content ?? evt.value ?? evt.token ?? "");
       } else if (evt.type === "replace") {
         if (h.onReplace) h.onReplace(evt.content ?? "");
+      } else if (evt.type === "chart_start") {
+        if (h.onChartStart) h.onChartStart();
+      } else if (evt.type === "chart") {
+        if (h.onChart) h.onChart(evt.chart);
       } else if (evt.type === "tool_start") {
         h.onToolStart(prettifyTool(evt.tool || evt.label || evt.name));
       } else if (evt.type === "tool_end") {

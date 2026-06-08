@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import uuid
 from pathlib import Path
@@ -129,6 +130,19 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
         _bd = {k: v for k, v in _bd.items() if v and v.strip()} or None
     birth_details = _bd or (session["birth_details"] if session else None)
 
+    # If the user submitted new birth details that differ from the session (different
+    # date or place), the cached chart belongs to someone else — discard it so the
+    # agent computes a fresh one for the new person.
+    if _bd and cached_chart and session:
+        _session_bd = session.get("birth_details") or {}
+        _date_changed = _bd.get("date", "").strip() != str(_session_bd.get("date", "")).strip()
+        _place_changed = _bd.get("place", "").strip().lower() != str(_session_bd.get("place", "")).strip().lower()
+        if _date_changed or _place_changed:
+            cached_chart = None
+            history = []  # fresh session for a different person
+
+    session_chart_before = cached_chart  # chart that existed in session before this request
+
     # If the form gave us birth details and we don't have a chart yet, compute it
     # in Python now instead of spending two LLM tool rounds (geocode + compute) on it.
     precomputed_chart = None
@@ -145,6 +159,9 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
         for _t in ("geocode_place", "compute_birth_chart"):
             yield f"data: {json.dumps({'type': 'tool_start', 'tool': _t})}\n\n"
             yield f"data: {json.dumps({'type': 'tool_end', 'tool': _t})}\n\n"
+        # Signal the frontend to show the chart-loading placeholder immediately,
+        # before the LLM starts — the chart data will follow after the reading streams.
+        yield f"data: {json.dumps({'type': 'chart_start'})}\n\n"
 
     initial_state: AgentState = {
         "messages": history + [HumanMessage(content=req.message)],
@@ -180,7 +197,10 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
                 yield f"data: {json.dumps({'type': 'tool_start', 'tool': event.get('name')})}\n\n"
 
             elif kind == "on_tool_end":
-                yield f"data: {json.dumps({'type': 'tool_end', 'tool': event.get('name')})}\n\n"
+                tool_name = event.get("name")
+                yield f"data: {json.dumps({'type': 'tool_end', 'tool': tool_name})}\n\n"
+                if tool_name == "compute_birth_chart":
+                    yield f"data: {json.dumps({'type': 'chart_start'})}\n\n"
 
             elif kind == "on_chain_end" and event.get("name") == "LangGraph":
                 output = event["data"].get("output", {})
@@ -228,10 +248,20 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
         else:
             yield f"data: {json.dumps({'type': 'replace', 'content': final_text})}\n\n"
 
+    # Emit the chart JSON once — only when a chart was freshly computed this request.
+    # If the chart was already in the session (session_chart_before is non-None), the
+    # user already saw it on a previous turn; don't clutter every follow-up message.
+    if final_birth_chart and not session_chart_before:
+        yield f"data: {json.dumps({'type': 'chart', 'chart': final_birth_chart})}\n\n"
+
     try:
         save_session(session_id, final_messages, birth_details, final_birth_chart)
     except Exception:
         pass
+
+    # Brief intentional pause before unlocking the composer — gives the user time
+    # to read the response and naturally paces request bursts to ease rate-limit pressure.
+    await asyncio.sleep(1.8)
 
     yield f"data: {json.dumps({'type': 'done', 'session_id': session_id})}\n\n"
 

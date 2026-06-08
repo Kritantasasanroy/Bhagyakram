@@ -68,7 +68,19 @@ function MdText({ text }) {
 }
 
 // ---- Bhagyakram (assistant) message , logo beside first line ----
-function BhagyakramMessage({ text, streaming }) {
+function BhagyakramMessage({ text, streaming, chart, chartPending }) {
+  const [chartReady, setChartReady] = useStateC(false);
+
+  useEffectC(() => {
+    if (!chart || streaming) { setChartReady(false); return; }
+    // Brief pause so the "rendering" placeholder is always visible before the wheel appears
+    const t = setTimeout(() => setChartReady(true), 700);
+    return () => clearTimeout(t);
+  }, [chart, streaming]);
+
+  // Show loading strip when: chart_start fired (chartPending) OR chart arrived but not yet ready
+  const showLoading = (chartPending && !chart) || (chart && !chartReady);
+
   return (
     <div style={{ display: "flex", gap: 14, maxWidth: 680, animation: "msgRise 0.3s var(--ease) both" }}>
       <div style={{ flexShrink: 0, marginTop: 2 }}>
@@ -79,6 +91,46 @@ function BhagyakramMessage({ text, streaming }) {
         color: "var(--ivory)", letterSpacing: "0.002em", minWidth: 0,
       }}>
         <MdText text={text} />
+
+        {/* Loading placeholder — shows as soon as chart_start fires, persists until wheel is ready */}
+        {showLoading && (
+          <div style={{
+            marginTop: 22,
+            background: "rgba(6,9,20,0.55)",
+            border: "1px solid rgba(201,168,76,0.18)",
+            borderRadius: 16,
+            padding: "18px 20px",
+            display: "flex", alignItems: "center", gap: 12,
+            animation: "fadeUp 0.3s var(--ease) both",
+          }}>
+            <LogoMark size={16} spin glow />
+            <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ivory-dim)", letterSpacing: "0.04em" }}>
+              rendering natal chart
+            </span>
+            <span style={{ display: "inline-flex", gap: 3, marginLeft: 2 }}>
+              {[0, 1, 2].map(i => (
+                <span key={i} style={{
+                  width: 4, height: 4, borderRadius: "50%", background: "var(--gold)",
+                  animation: `dotBounce 1.3s ease-in-out ${i * 0.18}s infinite`,
+                }} />
+              ))}
+            </span>
+          </div>
+        )}
+
+        {/* Actual chart wheel */}
+        {chart && chartReady && (
+          <div style={{
+            marginTop: 22,
+            background: "rgba(6,9,20,0.55)",
+            border: "1px solid rgba(201,168,76,0.18)",
+            borderRadius: 16,
+            padding: "16px 18px",
+            animation: "msgRise 0.45s var(--ease) both",
+          }}>
+            <NatalChart chart={chart} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -359,7 +411,7 @@ function ChatPanel({ messages, tool, streamingId, onSend, onPrompt, onEditDetail
             {messages.map((m) =>
               m.role === "user"
                 ? <UserMessage key={m.id} text={m.text} />
-                : <BhagyakramMessage key={m.id} text={m.text} streaming={m.id === streamingId} />
+                : <BhagyakramMessage key={m.id} text={m.text} streaming={m.id === streamingId} chart={m.chart} chartPending={m.chartPending} />
             )}
             {tool && <ToolIndicator label={tool.label} leaving={tool.leaving} />}
           </div>

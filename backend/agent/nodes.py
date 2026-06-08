@@ -228,22 +228,23 @@ def after_gate(state: AgentState) -> Literal["reasoning", "safety"]:
     return "reasoning"
 
 
-def _invoke_with_backoff(llm_factory, messages, attempts: int = 3):
+def _invoke_with_backoff(llm_factory, messages, attempts: int | None = None):
     """Retry on 429s: rotate to the next API key if the pool has more than one,
     otherwise back off (8s then 20s) and retry with the same key.
 
     Accepts a zero-arg callable so each retry gets a fresh LLM instance built
-    with the newly rotated key.
+    with the newly rotated key. Defaults to trying every key in the pool at least once.
     """
+    _attempts = attempts if attempts is not None else max(key_count(), 3)
     delays = [8, 20]
     last_err = None
-    for i in range(attempts):
+    for i in range(_attempts):
         try:
             return llm_factory().invoke(messages)
         except Exception as e:
             last_err = e
             is_rate_limit = "429" in str(e) or "rate-limit" in str(e).lower()
-            if not is_rate_limit or i == attempts - 1:
+            if not is_rate_limit or i == _attempts - 1:
                 raise
             rotate_key()
             if key_count() == 1:

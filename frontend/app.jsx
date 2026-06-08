@@ -142,6 +142,12 @@ function ChatApp({ userEmail, onSignOut }) {
           setStreamingId(botId);
           setMessages((prev) => prev.map((m) => m.id === botId ? { ...m, text: full } : m));
         },
+        onChartStart: () => {
+          setMessages((prev) => prev.map((m) => m.id === botId ? { ...m, chartPending: true } : m));
+        },
+        onChart: (chartData) => {
+          setMessages((prev) => prev.map((m) => m.id === botId ? { ...m, chart: chartData, chartPending: false } : m));
+        },
         onDone: () => {
           hasRead.current = true;
           setStreamingId(null);
