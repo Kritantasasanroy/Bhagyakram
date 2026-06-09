@@ -8,7 +8,7 @@ from typing import AsyncIterator, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel
@@ -375,6 +375,11 @@ def get_session(session_id: str):
     if not meta:
         raise HTTPException(status_code=404, detail="Session not found")
     return meta
+
+
+@app.head("/health")
+def health_head():
+    return Response(status_code=200)
 
 
 @app.get("/health")
