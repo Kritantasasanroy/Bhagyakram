@@ -233,6 +233,21 @@ async def stream_agent(req: ChatRequest) -> AsyncIterator[str]:
         yield f"data: {json.dumps({'type': 'done', 'session_id': session_id})}\n\n"
         return
 
+    # LangGraph's astream_events() does not raise GraphInterrupt or surface an
+    # __interrupt__ key in the streamed output when a node calls interrupt() , it
+    # just ends the event stream with no new AI message. The only way to detect a
+    # pending interrupt is to check the checkpointed state afterwards. Without this,
+    # a sensitive-topic question (e.g. death timing) silently produces no reply, or
+    # replays the previous turn's answer via the reconciliation fallback below.
+    if _HITL_AVAILABLE:
+        state = await graph.aget_state(thread_config)
+        for task in state.tasks:
+            if task.interrupts:
+                interrupt_val = task.interrupts[0].value
+                yield f"data: {json.dumps({'type': 'confirmation_needed', 'thread_id': thread_id, 'session_id': session_id, 'payload': interrupt_val})}\n\n"
+                yield f"data: {json.dumps({'type': 'done', 'session_id': session_id})}\n\n"
+                return
+
     # Reconcile the final message with what actually streamed. Three cases:
     #  - it extends the stream (e.g. a safety disclaimer appended) → send the tail
     #  - nothing streamed (off-topic redirect, need-details prompt) → send it whole

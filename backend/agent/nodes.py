@@ -142,6 +142,14 @@ _FLAT_REFUSAL_PHRASES = [
     "i apologize, but i can't",
 ]
 
+# The model often writes typographic quotes (’) instead of straight ones (') , normalise
+# before matching _FLAT_REFUSAL_PHRASES so a curly apostrophe doesn't defeat the check.
+_QUOTE_NORMALIZE = str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"'})
+
+
+def _normalize_quotes(text: str) -> str:
+    return text.translate(_QUOTE_NORMALIZE)
+
 _INJECTION_REPLY = (
     "That framing isn't one I can step into , I read the sky as it is, for reflection "
     "and pattern, not for guarantees. If you'd like to look at what your birth chart "
@@ -415,7 +423,8 @@ def safety_node(state: AgentState) -> dict:
     # The underlying model occasionally fires its own content policy with a flat short
     # refusal before our persona can respond. Convert those into an in-character Bhagyakram AI
     # reply so the person still gets a warm response.
-    if len(content) < 120 and any(p in content.lower() for p in _FLAT_REFUSAL_PHRASES):
+    normalized = _normalize_quotes(content).lower()
+    if len(content) < 120 and any(p in normalized for p in _FLAT_REFUSAL_PHRASES):
         return {"messages": [AIMessage(content=_INJECTION_REPLY)]}
 
     flagged = any(re.search(p, content, re.IGNORECASE) for p in _SAFETY_PATTERNS)
