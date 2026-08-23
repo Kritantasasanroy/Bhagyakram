@@ -13,13 +13,94 @@ function renderInline(str) {
   });
 }
 
-// ---- Full markdown renderer: headers, bullets, numbered lists, bold, italic ----
+// ---- GFM table block: | a | b | \n |---|---|  \n | 1 | 2 | ----
+function isTableRow(line) {
+  return typeof line === "string" && line.includes("|") && line.trim() !== "";
+}
+
+function isTableSeparator(line) {
+  return /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(line || "");
+}
+
+function splitTableRow(line) {
+  let s = line.trim();
+  if (s.startsWith("|")) s = s.slice(1);
+  if (s.endsWith("|")) s = s.slice(0, -1);
+  return s.split("|").map((c) => c.trim());
+}
+
+function parseTableBlock(lines, startIdx) {
+  const headerLine = lines[startIdx];
+  const sepLine = lines[startIdx + 1];
+  if (!isTableRow(headerLine) || sepLine === undefined || !isTableSeparator(sepLine)) return null;
+
+  const header = splitTableRow(headerLine);
+  const rows = [];
+  let i = startIdx + 2;
+  while (i < lines.length && isTableRow(lines[i]) && !isTableSeparator(lines[i])) {
+    rows.push(splitTableRow(lines[i]));
+    i++;
+  }
+  return { header, rows, nextIdx: i };
+}
+
+function MdTable({ header, rows }) {
+  return (
+    <div style={{ overflowX: "auto", margin: "12px 0" }}>
+      <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480, fontSize: 14, lineHeight: 1.55 }}>
+        <thead>
+          <tr>
+            {header.map((h, i) => (
+              <th key={i} style={{
+                textAlign: "left", padding: "8px 12px", borderBottom: "1px solid var(--hairline-2)",
+                color: "var(--gold)", fontFamily: "var(--mono)", fontSize: 11.5,
+                letterSpacing: "0.04em", textTransform: "uppercase", whiteSpace: "nowrap",
+              }}>
+                {renderInline(h)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri} style={{ borderBottom: ri < rows.length - 1 ? "1px solid var(--hairline)" : "none" }}>
+              {row.map((cell, ci) => (
+                <td key={ci} style={{ padding: "10px 12px", verticalAlign: "top", color: "var(--ivory-dim)" }}>
+                  {renderInline(cell)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ---- Full markdown renderer: headers, bullets, numbered lists, tables, bold, italic ----
 function MdText({ text }) {
   if (!text) return null;
   const lines = (text || "").split("\n");
+
+  const blocks = [];
+  let i = 0;
+  while (i < lines.length) {
+    const table = parseTableBlock(lines, i);
+    if (table) {
+      blocks.push({ type: "table", header: table.header, rows: table.rows });
+      i = table.nextIdx;
+    } else {
+      blocks.push({ type: "line", text: lines[i] });
+      i++;
+    }
+  }
+
   return (
     <>
-      {lines.map((line, i) => {
+      {blocks.map((b, i) => {
+        if (b.type === "table") return <MdTable key={i} header={b.header} rows={b.rows} />;
+
+        const line = b.text;
         // H3
         if (line.startsWith("### "))
           return <div key={i} style={{ fontFamily: "var(--serif)", fontSize: 14, fontWeight: 700, color: "var(--gold)", margin: "14px 0 2px", letterSpacing: "0.04em", textTransform: "uppercase", opacity: 0.9 }}>{renderInline(line.slice(4))}</div>;
