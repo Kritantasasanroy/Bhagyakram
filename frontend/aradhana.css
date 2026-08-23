@@ -567,7 +567,8 @@ body {
 }
 
 .auth-card input[type="email"],
-.auth-card input[type="password"] {
+.auth-card input[type="password"],
+.auth-card input[type="text"] {
   width: 100%;
   background: var(--panel-2);
   border: 1px solid var(--hairline-2);

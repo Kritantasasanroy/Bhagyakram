@@ -273,6 +273,11 @@ function FeaturesSection() {
       title: "Prompt Injection Handling",
       desc: "When the model's safety layer fires a flat refusal, the safety node replaces it with an in-character response that stays warm and offers a real reading.",
     },
+    {
+      icon: "shield",
+      title: "OTP-Verified Signup",
+      desc: "Neon Auth sends a one-time code to your inbox on signup, so every account maps to a real email. After that, signing back in is just email and password.",
+    },
   ];
 
   return (
@@ -305,7 +310,7 @@ function TechSection() {
     { icon: "network", name: "LangGraph", role: "Agent Orchestration" },
     { icon: "code", name: "LangChain", role: "LLM Framework" },
     { icon: "book", name: "RAG Pipeline", role: "Knowledge Retrieval" },
-    { icon: "zap", name: "Groq (Llama 3.3)", role: "Language Model" },
+    { icon: "zap", name: "Groq (GPT-OSS 120B)", role: "Language Model" },
     { icon: "server", name: "FastAPI", role: "Backend + SSE" },
     { icon: "layer", name: "ChromaDB", role: "Vector Store" },
     { icon: "compass", name: "Swiss Ephemeris", role: "Chart Computation" },
@@ -317,7 +322,7 @@ function TechSection() {
     { icon: "server", name: "Hugging Face Spaces", role: "Hosting (16GB RAM, Free)" },
     { icon: "shield", name: "Cloudflare", role: "CDN + Custom Domain" },
     { icon: "compass", name: "Real-Time Chart Engine", role: "SVG Natal Chart · Live Render" },
-    { icon: "zap", name: "Multi-Key API Rotation", role: "6 Groq Keys · Zero Downtime" },
+    { icon: "zap", name: "Multi-Key API Rotation", role: "4 Groq Keys · Zero Downtime" },
   ];
 
   return (
@@ -347,7 +352,7 @@ function TechSection() {
 // ---- Architecture section ----
 function ArchitectureSection() {
   return (
-    <section className="home-section">
+    <section id="how-it-works" className="home-section">
       <Reveal>
         <div className="section-title">Agent Architecture</div>
         <p className="section-subtitle">

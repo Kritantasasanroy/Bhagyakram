@@ -10,6 +10,8 @@ pinned: false
 
 # Bhagyakram
 
+**Live app:** https://bhagyakram.hawkvance.in/
+
 A conversational astrology companion. You share your birth details, it computes your actual natal chart using real planetary data, and then you can ask it anything , your career, relationships, what the energy looks like today, your Saturn return. It reasons in steps, calls tools to get real data, and responds with warmth.
 
 Everything runs on free tools. The only key you need is a free Groq API key , no credit card.
@@ -67,7 +69,7 @@ START → router → sensitivity_gate → reasoning ──→ tools → cache_ch
 
 | Component | Tool | Cost |
 |---|---|---|
-| LLM | Groq , `llama-3.3-70b-versatile` via Groq API | Free |
+| LLM | Groq , `openai/gpt-oss-120b` via Groq API | Free |
 | Ephemeris | pyswisseph (Swiss Ephemeris) | Free / open source |
 | Geocoding | Nominatim via geopy (OpenStreetMap) with local city cache | Free |
 | Embeddings | sentence-transformers `all-MiniLM-L6-v2`, runs locally | Free |
@@ -160,6 +162,7 @@ API at `http://localhost:8000`. Hit `/health` to confirm it's running.
 ## Recent Updates
 
 - **Neon DB Migration**: Authentication and user credential storage were migrated to a secure, custom FastAPI backend connected to Neon DB (PostgreSQL) with `bcrypt` password hashing and JWT sessions.
+- **OTP-Verified Signup**: Signup is now two steps , request a one-time code (sent via Neon's managed auth/email service), then verify it to create the account. Sign-in is unchanged: plain email + password against the local `users` table.
 - **Mobile Optimizations**: The UI has been heavily optimized for narrow screens (iPhone SE-sized). Includes fluid grids to prevent horizontal scrolling, enlarged touch targets (44px min), reduced paddings for wider chat bubbles, and a higher slide-up drawer for better virtual keyboard clearance.
 
 ---
