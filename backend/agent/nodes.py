@@ -254,11 +254,19 @@ def _invoke_with_backoff(llm_factory, messages, attempts: int | None = None):
 
     Rotates on ALL errors (not just 429s) so that auth failures, model
     unavailability, and connection errors are all healed by trying the next key.
-    Sleeps only for confirmed rate-limit errors when the pool has a single key.
     Defaults to trying every key in the pool at least once (min 3 attempts).
+
+    On a confirmed rate-limit, sleeps briefly even when rotating to a different
+    key. Groq's per-key TPM budget is small enough (8K on the free tier) that a
+    short burst of verbose readings can exhaust several keys' windows within the
+    same minute; the token bucket itself refills in well under a second, so a
+    short pause between attempts recovers a burst that immediate rotation alone
+    cannot. The single-key case still gets the longer delays since there's no
+    other key to fall back to while it cools down.
     """
     _attempts = attempts if attempts is not None else max(key_count(), 3)
-    delays = [5, 15]
+    single_key_delays = [5, 15]
+    multi_key_delay = 2
     last_err = None
     for i in range(_attempts):
         try:
@@ -270,8 +278,11 @@ def _invoke_with_backoff(llm_factory, messages, attempts: int | None = None):
             if i == _attempts - 1:
                 raise
             rotate_key()
-            if rl and key_count() == 1:
-                time.sleep(delays[min(i, len(delays) - 1)])
+            if rl:
+                if key_count() == 1:
+                    time.sleep(single_key_delays[min(i, len(single_key_delays) - 1)])
+                else:
+                    time.sleep(multi_key_delay)
     raise last_err  # pragma: no cover
 
 
